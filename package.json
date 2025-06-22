@@ -1,5 +1,5 @@
 {
-  "name": "@juyiting/mcp-client",
+  "name": "juyiting-mcp-client",
   "version": "1.0.0",
   "description": "聚义厅MCP客户端 - AI人格协作工具",
   "main": "dist/server.js",
@@ -44,9 +44,10 @@
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.3",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.1.0",
     "jest": "^29.0.0",
     "pkg": "^5.8.1",
     "prettier": "^3.0.0",
