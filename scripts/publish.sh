@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 
 # 项目信息
 PROJECT_NAME="聚义厅MCP客户端"
-PACKAGE_NAME="@juyiting/mcp-client"
+PACKAGE_NAME="juyiting-mcp-client"
 
 # 日志函数
 log_info() {

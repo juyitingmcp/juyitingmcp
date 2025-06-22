@@ -1,12 +1,26 @@
 {
   "mcpServers": {
-    "crawl-mcp": {
-      "command": "npx",
-      "args": ["-y", "crawl-mcp-server@latest"],
+    "juyiting-local": {
+      "command": "node",
+      "args": [
+        "/Users/coso/Documents/dev/ai/juyiting/juyitingmcp/dist/server.js",
+        "--personas", "/Users/coso/Documents/dev/ai/juyiting/juyitingmcp/examples/local-personas.json"
+      ],
       "env": {
-        "MCP_DEBUG": "false",
-        "CRAWL_LOG_LEVEL": "warn",
-        "CRAWL_OUTPUT_DIR": "./crawled_articles"
+        "NODE_ENV": "development",
+        "DEBUG": "false",
+        "TELEMETRY_ENABLED": "false"
+      }
+    },
+    "juyiting-dev": {
+      "command": "npm",
+      "args": [
+        "run", "dev"
+      ],
+      "cwd": "/Users/coso/Documents/dev/ai/juyiting/juyitingmcp",
+      "env": {
+        "NODE_ENV": "development",
+        "DEBUG": "true"
       }
     }
   }
