@@ -1,6 +1,6 @@
 {
   "name": "juyiting-mcp-client",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "聚义厅MCP客户端 - AI人格协作工具",
   "main": "dist/server.js",
   "type": "module",
