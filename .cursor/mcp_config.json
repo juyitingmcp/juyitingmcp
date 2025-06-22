@@ -4,23 +4,32 @@
       "command": "node",
       "args": [
         "/Users/coso/Documents/dev/ai/juyiting/juyitingmcp/dist/server.js",
-        "--personas", "/Users/coso/Documents/dev/ai/juyiting/juyitingmcp/examples/local-personas.json"
+        "--personas", 
+        "/Users/coso/Documents/dev/ai/juyiting/juyitingmcp/examples/local-personas.json",
+        "--debug"
       ],
-      "env": {
-        "NODE_ENV": "development",
-        "DEBUG": "false",
-        "TELEMETRY_ENABLED": "false"
-      }
-    },
-    "juyiting-dev": {
-      "command": "npm",
-      "args": [
-        "run", "dev"
-      ],
-      "cwd": "/Users/coso/Documents/dev/ai/juyiting/juyitingmcp",
       "env": {
         "NODE_ENV": "development",
         "DEBUG": "true"
+      }
+    },
+    "juyiting-global": {
+      "command": "juyiting-mcp",
+      "args": [
+        "--personas", 
+        "/Users/coso/Documents/dev/ai/juyiting/juyitingmcp/examples/local-personas.json"
+      ],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "juyiting-remote": {
+      "command": "node",
+      "args": [
+        "/Users/coso/Documents/dev/ai/juyiting/juyitingmcp/dist/server.js"
+      ],
+      "env": {
+        "NODE_ENV": "production"
       }
     }
   }
