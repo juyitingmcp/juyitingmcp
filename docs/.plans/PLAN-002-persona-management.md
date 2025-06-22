@@ -24,9 +24,9 @@ import { Persona } from './types.js';
 
 // 人格数据源URLs
 export const PERSONA_SOURCES = [
-  'https://gitee.com/yinwm/persona-summoner-hub/raw/main/personas.json',
-  'https://raw.githubusercontent.com/yinwm/persona-summoner-hub/main/personas.json',
-  'https://cdn.jsdelivr.net/gh/yinwm/persona-summoner-hub@main/personas.json'
+  'https://gitee.com/juyitingmcp/juyitingmcp/raw/main/personas.json',
+'https://raw.githubusercontent.com/juyitingmcp/juyitingmcp/main/personas.json',
+'https://cdn.jsdelivr.net/gh/juyitingmcp/juyitingmcp@main/personas.json'
 ];
 
 // 默认人格数据（用作降级方案）

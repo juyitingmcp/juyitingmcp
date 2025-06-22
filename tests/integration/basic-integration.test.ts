@@ -1,5 +1,5 @@
-import { PersonaSummonerServer } from '../../src/server';
-import { RemotePersonaRepository } from '../../src/persona-repository';
+import { HeroSummonerServer } from '../../src/server';
+import { RemoteHeroRepository } from '../../src/hero-repository';
 import { ConfigSynchronizer } from '../../src/config-synchronizer';
 import { CollaborationEngine } from '../../src/collaboration-engine';
 import { Persona } from '../../src/types';
@@ -7,22 +7,22 @@ import { Persona } from '../../src/types';
 describe('基础集成测试', () => {
   describe('模块导入', () => {
     test('应该能正确导入所有核心模块', () => {
-      expect(PersonaSummonerServer).toBeDefined();
-      expect(RemotePersonaRepository).toBeDefined();
+      expect(HeroSummonerServer).toBeDefined();
+      expect(RemoteHeroRepository).toBeDefined();
       expect(ConfigSynchronizer).toBeDefined();
       expect(CollaborationEngine).toBeDefined();
     });
   });
 
   describe('类实例化', () => {
-    test('应该能创建PersonaSummonerServer实例', () => {
-      const server = new PersonaSummonerServer();
-      expect(server).toBeInstanceOf(PersonaSummonerServer);
+    test('应该能创建HeroSummonerServer实例', () => {
+      const server = new HeroSummonerServer();
+      expect(server).toBeInstanceOf(HeroSummonerServer);
     });
 
-    test('应该能创建RemotePersonaRepository实例', () => {
-      const repository = new RemotePersonaRepository();
-      expect(repository).toBeInstanceOf(RemotePersonaRepository);
+    test('应该能创建RemoteHeroRepository实例', () => {
+      const repository = new RemoteHeroRepository();
+      expect(repository).toBeInstanceOf(RemoteHeroRepository);
     });
 
     test('应该能创建ConfigSynchronizer实例', () => {
@@ -39,7 +39,7 @@ describe('基础集成测试', () => {
     });
 
     test('应该能创建CollaborationEngine实例', () => {
-      const repository = new RemotePersonaRepository();
+      const repository = new RemoteHeroRepository();
       const engine = new CollaborationEngine(repository);
       expect(engine).toBeInstanceOf(CollaborationEngine);
     });
@@ -47,7 +47,7 @@ describe('基础集成测试', () => {
 
   describe('基础功能验证', () => {
     test('应该能处理空人格列表', async () => {
-      const repository = new RemotePersonaRepository([]);
+      const repository = new RemoteHeroRepository([]);
       const personas = await repository.getAllPersonas();
       
       // 应该返回默认人格或空数组
@@ -63,7 +63,7 @@ describe('基础集成测试', () => {
         version: '1.0.0'
       };
 
-      const repository = new RemotePersonaRepository([testPersona]);
+      const repository = new RemoteHeroRepository([testPersona]);
       const personas = await repository.getAllPersonas();
       
       expect(personas.length).toBeGreaterThan(0);
@@ -81,7 +81,7 @@ describe('基础集成测试', () => {
         version: '1.0.0'
       };
 
-      const repository = new RemotePersonaRepository([testPersona]);
+      const repository = new RemoteHeroRepository([testPersona]);
       const persona = await repository.getPersonaById('test_persona');
       
       expect(persona).toBeDefined();
@@ -89,7 +89,7 @@ describe('基础集成测试', () => {
     });
 
     test('应该能处理不存在的人格查询', async () => {
-      const repository = new RemotePersonaRepository([]);
+      const repository = new RemoteHeroRepository([]);
       const persona = await repository.getPersonaById('non_existent');
       
       expect(persona).toBeNull();
@@ -101,7 +101,7 @@ describe('基础集成测试', () => {
       // Mock fetch to simulate network error
       global.fetch = jest.fn().mockRejectedValue(new Error('Network error'));
       
-      const repository = new RemotePersonaRepository([]);
+      const repository = new RemoteHeroRepository([]);
       
       // 这不应该抛出错误，而是降级到默认行为
       await expect(repository.getAllPersonas()).resolves.toBeDefined();
@@ -116,7 +116,7 @@ describe('基础集成测试', () => {
       ];
 
       // 应该过滤掉无效人格
-      expect(() => new RemotePersonaRepository(invalidPersonas as Persona[])).not.toThrow();
+      expect(() => new RemoteHeroRepository(invalidPersonas as Persona[])).not.toThrow();
     });
   });
 
@@ -132,14 +132,14 @@ describe('基础集成测试', () => {
         version: '1.0.0'
       }));
 
-      const repository = new RemotePersonaRepository(testPersonas);
+      const repository = new RemoteHeroRepository(testPersonas);
       
       const endTime = Date.now();
       const duration = endTime - startTime;
       
       // 应该在100ms内完成
       expect(duration).toBeLessThan(100);
-      expect(repository).toBeInstanceOf(RemotePersonaRepository);
+      expect(repository).toBeInstanceOf(RemoteHeroRepository);
     });
 
     test('人格查询应该快速完成', async () => {
@@ -151,7 +151,7 @@ describe('基础集成测试', () => {
         version: '1.0.0'
       }));
 
-      const repository = new RemotePersonaRepository(testPersonas);
+      const repository = new RemoteHeroRepository(testPersonas);
       
       const startTime = Date.now();
       const personas = await repository.getAllPersonas();

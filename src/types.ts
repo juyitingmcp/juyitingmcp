@@ -1,5 +1,5 @@
-// 核心人格接口
-export interface Persona {
+// 核心英雄接口
+export interface Hero {
   id: string;
   name: string;
   rule: string;
@@ -12,12 +12,12 @@ export interface Persona {
   capabilities?: string[];
   limitations?: string[];
   examples?: string[];
-  relatedPersonas?: string[];
+  relatedHeroes?: string[];
 }
 
 // 协作配置
 export interface CollaborationConfig {
-  personaIds?: string[];
+  heroIds?: string[];
   maxRounds?: number;
   timeoutPerRound?: number;
   mode?: CollaborationMode;
@@ -32,10 +32,10 @@ export enum CollaborationMode {
   INTELLIGENT = 'intelligent'
 }
 
-// 人格分析结果
-export interface PersonaAnalysis {
-  personaId: string;
-  personaName: string;
+// 英雄分析结果
+export interface HeroAnalysis {
+  heroId: string;
+  heroName: string;
   query: string;
   analysis: string;
   confidence: number;
@@ -48,9 +48,9 @@ export interface PersonaAnalysis {
 export interface CollaborationResult {
   sessionId: string;
   query: string;
-  selectedPersonas: string[];
+  selectedHeroes: string[];
   mode: string;
-  analyses: PersonaAnalysis[];
+  analyses: HeroAnalysis[];
   crossValidation?: CrossValidationResult;
   synthesis?: SynthesisResult;
   actionPlan?: ActionPlan;
@@ -90,12 +90,12 @@ export interface ActionStep {
   dependencies: string[];
 }
 
-// 人格配置
-export interface PersonaConfig {
+// 英雄配置
+export interface HeroConfig {
   id: string;
   name: string;
   version: string;
-  personas: Persona[];
+  heroes: Hero[];
   collaboration: CollaborationConfig;
   tools?: ToolConfig[];
   createdAt?: string;
@@ -114,7 +114,7 @@ export interface ConfigSummary {
   id: string;
   name: string;
   description?: string;
-  personas: string[];
+  heroes: string[];
   createdAt: string;
   version: string;
 }
@@ -123,7 +123,7 @@ export interface ConfigSummary {
 export interface LocalConfig {
   userKey: string;
   apiBaseUrl: string;
-  currentConfig?: PersonaConfig;
+  currentConfig?: HeroConfig;
   lastSyncTime?: string;
   cache: CacheConfig;
   sync: SyncConfig;
@@ -165,7 +165,7 @@ export interface SessionInfo {
   id: string;
   query: string;
   status: 'pending' | 'running' | 'completed' | 'failed';
-  selectedPersonas: string[];
+  selectedHeroes: string[];
   startTime: number;
   duration: number;
 }
@@ -176,9 +176,9 @@ export interface CacheEntry {
   expiry: number;
 }
 
-// 人格仓库接口
-export interface PersonaRepository {
-  getAllPersonas(): Promise<Persona[]>;
-  getPersonaById(id: string): Promise<Persona | null>;
-  updateFromConfig(config: PersonaConfig): Promise<void>;
+// 英雄仓库接口
+export interface HeroRepository {
+  getAllHeroes(): Promise<Hero[]>;
+  getHeroById(id: string): Promise<Hero | null>;
+  updateFromConfig(config: HeroConfig): Promise<void>;
 } 

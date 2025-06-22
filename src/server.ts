@@ -5,16 +5,16 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod';
 import { Command } from 'commander';
 import { readFileSync, existsSync } from 'fs';
-import { RemotePersonaRepository } from './persona-repository.js';
-import { Persona } from './types.js';
+import { RemoteHeroRepository } from './hero-repository.js';
+import { Hero } from './types.js';
 
 // 解析命令行参数
 const program = new Command();
 program
   .name('juyiting-mcp-client')
-  .description('聚义厅MCP客户端 - AI人格协作工具')
+  .description('聚义厅MCP客户端 - AI英雄协作工具')
   .version('1.0.1')
-  .option('-p, --personas <file>', '本地人格配置文件路径')
+  .option('-p, --heroes <file>', '本地英雄配置文件路径')
   .option('-c, --config <file>', '配置文件路径')
   .option('--debug', '启用调试模式')
   .option('--no-telemetry', '禁用遥测')
@@ -22,28 +22,28 @@ program
 
 const options = program.opts();
 
-// 加载本地人格
-function loadLocalPersonas(filePath?: string): Persona[] {
+// 加载本地英雄
+function loadLocalHeroes(filePath?: string): Hero[] {
   if (!filePath) return [];
   
   try {
     if (!existsSync(filePath)) {
-      console.error(`⚠️ 本地人格文件不存在: ${filePath}`);
+      console.error(`⚠️ 本地英雄文件不存在: ${filePath}`);
       return [];
     }
     
     const content = readFileSync(filePath, 'utf-8');
-    const personas = JSON.parse(content);
+    const heroes = JSON.parse(content);
     
-    if (!Array.isArray(personas)) {
-      console.error('⚠️ 本地人格文件格式错误：应为数组');
+    if (!Array.isArray(heroes)) {
+      console.error('⚠️ 本地英雄文件格式错误：应为数组');
       return [];
     }
     
-    console.error(`✅ 已加载 ${personas.length} 个本地人格`);
-    return personas;
+    console.error(`✅ 已加载 ${heroes.length} 个本地英雄`);
+    return heroes;
   } catch (error) {
-    console.error(`❌ 加载本地人格失败: ${error instanceof Error ? error.message : '未知错误'}`);
+    console.error(`❌ 加载本地英雄失败: ${error instanceof Error ? error.message : '未知错误'}`);
     return [];
   }
 }
@@ -54,38 +54,38 @@ const server = new McpServer({
   version: '1.0.1'
 });
 
-// 初始化人格仓库（传入本地人格）
-const localPersonas = loadLocalPersonas(options.personas);
-const personaRepo = new RemotePersonaRepository(localPersonas);
+// 初始化英雄仓库（传入本地英雄）
+  const localHeroes = loadLocalHeroes(options.heroes);
+  const heroRepo = new RemoteHeroRepository(localHeroes);
 
-// 注册召唤人格工具
+// 注册召唤英雄工具
 server.registerTool(
-  'summon_persona',
+  'summon_hero',
   {
-    title: '召唤人格',
-    description: '从聚义厅召唤指定的人格角色',
+    title: '召唤英雄',
+    description: '从聚义厅召唤指定的英雄角色',
     inputSchema: {
-      name: z.string().describe('人格名称，如：暴躁老哥、暖心姐姐、拆解大师等')
+      name: z.string().describe('英雄名称，如：暴躁老哥、暖心姐姐、拆解大师等')
     }
   },
   async ({ name }) => {
     try {
       // 先尝试通过ID查找，如果找不到则通过名称搜索
-      let persona = await personaRepo.getPersonaById(name);
-      if (!persona) {
-        const searchResults = await personaRepo.searchPersonas(name);
-        persona = searchResults.find(p => 
+      let hero = await heroRepo.getHeroById(name);
+      if (!hero) {
+        const searchResults = await heroRepo.searchHeroes(name);
+        hero = searchResults.find(p => 
           p.name === name || 
           p.id === name ||
           p.name.toLowerCase() === name.toLowerCase()
         ) || null;
       }
       
-      if (!persona) {
+      if (!hero) {
         return {
           content: [{
             type: 'text',
-            text: `❌ 未找到名为"${name}"的人格。\n\n💡 提示：\n1. 检查人格名称是否正确\n2. 使用 list_personas 查看所有可用人格\n3. 使用 search_personas 搜索相关人格`
+            text: `❌ 未找到名为"${name}"的英雄。\n\n💡 提示：\n1. 检查英雄名称是否正确\n2. 使用 list_heroes 查看所有可用英雄\n3. 使用 search_heroes 搜索相关英雄`
           }]
         };
       }
@@ -93,80 +93,80 @@ server.registerTool(
       return {
         content: [{
           type: 'text',
-          text: `🎭 **${persona.name}** (${persona.id}) 已召唤！\n**🎯 目标**: ${persona.goal}\n**📝 描述**: ${persona.description || '无描述'}\n**📍 来源**: ${persona.source || 'unknown'}\n\n**📜 人格规则**:\n${persona.rule}`
+          text: `🎭 **${hero.name}** (${hero.id}) 已召唤！\n**🎯 目标**: ${hero.goal}\n**📝 描述**: ${hero.description || '无描述'}\n**📍 来源**: ${hero.source || 'unknown'}\n\n**📜 英雄规则**:\n${hero.rule}`
         }]
       };
     } catch (error) {
       return {
         content: [{
           type: 'text',
-          text: `❌ 召唤人格时发生错误：${error instanceof Error ? error.message : '未知错误'}`
+          text: `❌ 召唤英雄时发生错误：${error instanceof Error ? error.message : '未知错误'}`
         }]
       };
     }
   }
 );
 
-// 注册列出所有人格工具
+// 注册列出所有英雄工具
 server.registerTool(
-  'list_personas',
+  'list_heroes',
   {
-    title: '列出所有人格',
-    description: '显示聚义厅中所有可用的人格角色',
+    title: '列出所有英雄',
+    description: '显示聚义厅中所有可用的英雄角色',
     inputSchema: {
-      category: z.string().optional().describe('可选：按分类筛选人格'),
-      source: z.enum(['local', 'remote', 'default']).optional().describe('可选：按数据源筛选人格')
+      category: z.string().optional().describe('可选：按分类筛选英雄'),
+      source: z.enum(['local', 'remote', 'default']).optional().describe('可选：按数据源筛选英雄')
     }
   },
   async ({ category, source }) => {
     try {
-      let personas = await personaRepo.getAllPersonas();
+      let heroes = await heroRepo.getAllHeroes();
       
       // 按来源筛选
       if (source) {
-        personas = personas.filter(p => p.source === source);
+        heroes = heroes.filter(p => p.source === source);
       }
       
       // 按分类筛选
       if (category) {
-        personas = personas.filter(p => 
+        heroes = heroes.filter(p => 
           p.category?.toLowerCase().includes(category.toLowerCase()) ||
-          p.tags?.some(tag => tag.toLowerCase().includes(category.toLowerCase()))
+          p.tags?.some((tag: any) => tag.toLowerCase().includes(category.toLowerCase()))
         );
       }
       
-      if (personas.length === 0) {
+      if (heroes.length === 0) {
         return {
           content: [{
             type: 'text',
             text: source || category 
-              ? `没有找到符合条件的人格。`
-              : '当前没有可用的人格。'
+              ? `没有找到符合条件的英雄。`
+              : '当前没有可用的英雄。'
           }]
         };
       }
 
       // 按来源分组
-      const groupedPersonas = personas.reduce((acc, persona) => {
-        const src = persona.source || 'unknown';
+      const groupedHeroes = heroes.reduce((acc: any, hero: any) => {
+        const src = hero.source || 'unknown';
         if (!acc[src]) acc[src] = [];
-        acc[src].push(persona);
+        acc[src].push(hero);
         return acc;
-      }, {} as Record<string, Persona[]>);
+      }, {} as Record<string, Hero[]>);
 
-      let result = `📋 **聚义厅人格列表** (共 ${personas.length} 个)：\n\n`;
+      let result = `📋 **聚义厅英雄列表** (共 ${heroes.length} 个)：\n\n`;
       
-      for (const [src, personaList] of Object.entries(groupedPersonas)) {
+      for (const [src, heroList] of Object.entries(groupedHeroes)) {
         const sourceIcon = src === 'local' ? '🏠' : src === 'remote' ? '🌐' : '⭐';
-        result += `${sourceIcon} **${src.toUpperCase()}** (${personaList.length}个):\n`;
+        result += `${sourceIcon} **${src.toUpperCase()}** (${(heroList as any[]).length}个):\n`;
         
-        personaList.forEach(persona => {
-          result += `  • **${persona.name}**: ${persona.description || '无描述'}\n`;
+        (heroList as any[]).forEach((hero: any) => {
+          result += `  • **${hero.name}**: ${hero.description || '无描述'}\n`;
         });
         result += '\n';
       }
       
-      result += '💡 使用 `summon_persona` 工具来召唤任意人格。';
+      result += '💡 使用 `summon_hero` 工具来召唤任意英雄。';
 
       return {
         content: [{
@@ -178,57 +178,57 @@ server.registerTool(
       return {
         content: [{
           type: 'text',
-          text: `❌ 获取人格列表时发生错误：${error instanceof Error ? error.message : '未知错误'}`
+          text: `❌ 获取英雄列表时发生错误：${error instanceof Error ? error.message : '未知错误'}`
         }]
       };
     }
   }
 );
 
-// 注册搜索人格工具
+// 注册搜索英雄工具
 server.registerTool(
-  'search_personas',
+  'search_heroes',
   {
-    title: '搜索人格',
-    description: '根据关键词搜索匹配的人格角色',
+    title: '搜索英雄',
+    description: '根据关键词搜索匹配的英雄角色',
     inputSchema: {
-      keyword: z.string().describe('搜索关键词，可以是人格名称或描述中的词语')
+      keyword: z.string().describe('搜索关键词，可以是英雄名称或描述中的词语')
     }
   },
   async ({ keyword }) => {
     try {
-      const allPersonas = await personaRepo.getAllPersonas();
-      const matchedPersonas = allPersonas.filter(persona => 
-        persona.name.toLowerCase().includes(keyword.toLowerCase()) ||
-        (persona.description || '').toLowerCase().includes(keyword.toLowerCase()) ||
-        persona.id.toLowerCase().includes(keyword.toLowerCase()) ||
-        persona.tags?.some(tag => tag.toLowerCase().includes(keyword.toLowerCase()))
+      const allHeroes = await heroRepo.getAllHeroes();
+      const matchedHeroes = allHeroes.filter((hero: any) => 
+        hero.name.toLowerCase().includes(keyword.toLowerCase()) ||
+        (hero.description || '').toLowerCase().includes(keyword.toLowerCase()) ||
+        hero.id.toLowerCase().includes(keyword.toLowerCase()) ||
+        hero.tags?.some((tag: any) => tag.toLowerCase().includes(keyword.toLowerCase()))
       );
 
-      if (matchedPersonas.length === 0) {
+      if (matchedHeroes.length === 0) {
         return {
           content: [{
             type: 'text',
-            text: `🔍 没有找到包含关键词"${keyword}"的人格。\n\n💡 建议：\n1. 尝试其他关键词\n2. 使用 list_personas 查看所有可用人格`
+            text: `🔍 没有找到包含关键词"${keyword}"的英雄。\n\n💡 建议：\n1. 尝试其他关键词\n2. 使用 list_heroes 查看所有可用英雄`
           }]
         };
       }
 
-      const personaList = matchedPersonas.map(persona => 
-        `• **${persona.name}** (${persona.source || 'unknown'}): ${persona.description || '无描述'}`
+      const heroList = matchedHeroes.map((hero: any) => 
+        `• **${hero.name}** (${hero.source || 'unknown'}): ${hero.description || '无描述'}`
       ).join('\n');
 
       return {
         content: [{
           type: 'text',
-          text: `🔍 找到 ${matchedPersonas.length} 个匹配"${keyword}"的人格：\n\n${personaList}\n\n💡 使用 \`summon_persona\` 召唤任意人格。`
+          text: `🔍 找到 ${matchedHeroes.length} 个匹配"${keyword}"的英雄：\n\n${heroList}\n\n💡 使用 \`summon_hero\` 召唤任意英雄。`
         }]
       };
     } catch (error) {
       return {
         content: [{
           type: 'text',
-          text: `❌ 搜索人格时发生错误：${error instanceof Error ? error.message : '未知错误'}`
+          text: `❌ 搜索英雄时发生错误：${error instanceof Error ? error.message : '未知错误'}`
         }]
       };
     }
@@ -243,16 +243,16 @@ async function main() {
     if (options.debug) {
       console.error('🐛 调试模式已启用');
       console.error('📋 配置信息:', {
-        personas: options.personas,
+        heroes: options.heroes,
         config: options.config,
-        localPersonasCount: localPersonas.length
+        localHeroesCount: localHeroes.length
       });
     }
     
     // 预热缓存
-    console.error('🔥 预热人格缓存...');
-    const allPersonas = await personaRepo.getAllPersonas();
-    console.error(`✅ 缓存预热完成，共加载 ${allPersonas.length} 个人格`);
+    console.error('🔥 预热英雄缓存...');
+    const allHeroes = await heroRepo.getAllHeroes();
+    console.error(`✅ 缓存预热完成，共加载 ${allHeroes.length} 个英雄`);
     
     const transport = new StdioServerTransport();
     await server.connect(transport);
@@ -273,7 +273,7 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
   juyiting-mcp [选项]
 
 选项：
-  -p, --personas <file>    指定本地人格配置文件
+  -p, --heroes <file>    指定本地英雄配置文件
   -c, --config <file>      指定配置文件路径
   --debug                  启用调试模式
   --no-telemetry          禁用遥测
@@ -281,18 +281,18 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
   -V, --version           显示版本号
 
 可用工具：
-  - summon_persona: 召唤指定的人格角色
-  - list_personas: 列出所有可用的人格
-  - search_personas: 搜索匹配的人格角色
+  - summon_hero: 召唤指定的英雄角色
+  - list_heroes: 列出所有可用的英雄
+  - search_heroes: 搜索匹配的英雄角色
 
 示例：
-  juyiting-mcp --personas ./local-personas.json
+  juyiting-mcp --heroes ./local-heroes.json
   juyiting-mcp --debug
   
 MCP工具使用：
-  召唤人格: summon_persona({"name": "暴躁老哥"})
-  列出人格: list_personas({})
-  搜索人格: search_personas({"keyword": "暴躁"})
+  召唤英雄: summon_hero({"name": "暴躁老哥"})
+  列出英雄: list_heroes({})
+  搜索英雄: search_heroes({"keyword": "暴躁"})
 `);
   process.exit(0);
 }

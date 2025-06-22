@@ -1,4 +1,4 @@
-import { RemotePersonaRepository } from '../../src/persona-repository';
+import { RemoteHeroRepository } from '../../src/hero-repository';
 import { Persona, CollaborationMode } from '../../src/types';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -12,8 +12,8 @@ const mockResponses = JSON.parse(fs.readFileSync(mockResponsesPath, 'utf-8'));
 // Mock fetch 全局函数
 global.fetch = jest.fn();
 
-describe('RemotePersonaRepository', () => {
-  let repository: RemotePersonaRepository;
+describe('RemoteHeroRepository', () => {
+  let repository: RemoteHeroRepository;
   let mockFetch: jest.MockedFunction<typeof fetch>;
 
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe('RemotePersonaRepository', () => {
     
     // 使用测试人格数据初始化仓库
     const localPersonas = testPersonas.filter(p => p.source === 'local');
-    repository = new RemotePersonaRepository(localPersonas);
+    repository = new RemoteHeroRepository(localPersonas);
   });
 
   afterEach(() => {
@@ -32,9 +32,9 @@ describe('RemotePersonaRepository', () => {
   describe('构造函数和初始化', () => {
     test('应该正确初始化本地人格', () => {
       const localPersonas = testPersonas.filter(p => p.source === 'local');
-      const repo = new RemotePersonaRepository(localPersonas);
+      const repo = new RemoteHeroRepository(localPersonas);
       
-      expect(repo).toBeInstanceOf(RemotePersonaRepository);
+      expect(repo).toBeInstanceOf(RemoteHeroRepository);
     });
 
     test('应该过滤无效的本地人格', () => {
@@ -58,7 +58,7 @@ describe('RemotePersonaRepository', () => {
       // 监听console.warn
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
       
-      const repo = new RemotePersonaRepository(invalidPersonas);
+      const repo = new RemoteHeroRepository(invalidPersonas);
       
       expect(consoleSpy).toHaveBeenCalledWith(
         '无效的本地人格被跳过:',

@@ -1,4 +1,4 @@
-import { PersonaConfig, LocalConfig, ConfigSummary } from './types.js';
+import { HeroConfig, LocalConfig, ConfigSummary } from './types.js';
 import { networkManager } from './utils/network.js';
 import { CacheManager, CacheKeyGenerator } from './utils/cache.js';
 import { DEFAULT_CONFIG } from './constants.js';
@@ -119,7 +119,7 @@ export class ConfigSynchronizer {
   /**
    * 获取当前配置
    */
-  getCurrentConfig(): PersonaConfig | null {
+  getCurrentConfig(): HeroConfig | null {
     return this.localConfig.currentConfig || null;
   }
 
@@ -188,7 +188,7 @@ export class ConfigSynchronizer {
   /**
    * 下载指定配置
    */
-  async downloadConfig(configId: string): Promise<PersonaConfig> {
+  async downloadConfig(configId: string): Promise<HeroConfig> {
     if (!this.localConfig.userKey) {
       throw new Error('用户KEY未配置，请先设置认证密钥');
     }
@@ -219,7 +219,7 @@ export class ConfigSynchronizer {
       const config = result.data.data;
       
       // 验证配置完整性
-      this.validatePersonaConfig(config);
+      this.validateHeroConfig(config);
       
       // 缓存配置
       this.cache.set(cacheKey, config, 10 * 60 * 1000); // 10分钟缓存
@@ -234,7 +234,7 @@ export class ConfigSynchronizer {
   /**
    * 同步远程配置到本地
    */
-  async syncFromRemote(configId: string): Promise<PersonaConfig> {
+  async syncFromRemote(configId: string): Promise<HeroConfig> {
     if (this.syncInProgress) {
       throw new Error('同步正在进行中，请稍后再试');
     }
@@ -267,39 +267,39 @@ export class ConfigSynchronizer {
   }
 
   /**
-   * 验证人格配置完整性
+   * 验证英雄配置完整性
    */
-  private validatePersonaConfig(config: PersonaConfig): void {
-    const required: (keyof PersonaConfig)[] = ['id', 'name', 'version', 'personas'];
+  private validateHeroConfig(config: HeroConfig): void {
+    const required: (keyof HeroConfig)[] = ['id', 'name', 'version', 'heroes'];
     
     for (const field of required) {
       if (!config[field]) {
-        throw new Error(`配置缺少必需字段: ${field}`);
+        throw new Error(`配置缺少必需字段: ${String(field)}`);
       }
     }
 
-    // 验证人格数组
-    if (!Array.isArray(config.personas) || config.personas.length === 0) {
-      throw new Error('配置必须包含至少一个人格');
+    // 验证英雄数组
+    if (!Array.isArray(config.heroes) || config.heroes.length === 0) {
+      throw new Error('配置必须包含至少一个英雄');
     }
 
-    // 验证每个人格
-    config.personas.forEach((persona, index) => {
-      const personaRequired: (keyof typeof persona)[] = ['id', 'name', 'rule', 'goal'];
+    // 验证每个英雄
+    config.heroes.forEach((hero: any, index: any) => {
+      const personaRequired: (keyof typeof hero)[] = ['id', 'name', 'rule', 'goal'];
       for (const field of personaRequired) {
-        if (!persona[field]) {
-          throw new Error(`人格 ${index + 1} 缺少必需字段: ${field}`);
+        if (!hero[field]) {
+          throw new Error(`英雄 ${index + 1} 缺少必需字段: ${String(field)}`);
         }
       }
     });
 
-    console.log(`配置验证通过: ${config.name} (${config.personas.length} 个人格)`);
+    console.log(`配置验证通过: ${config.name} (${config.heroes.length} 个英雄)`);
   }
 
   /**
    * 保存当前配置
    */
-  private async saveCurrentConfig(config: PersonaConfig): Promise<void> {
+  private async saveCurrentConfig(config: HeroConfig): Promise<void> {
     this.localConfig.currentConfig = config;
     this.localConfig.lastSyncTime = new Date().toISOString();
     

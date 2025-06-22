@@ -1,14 +1,14 @@
-import { Persona } from './types.js';
+import { Hero } from './types.js';
 
-// 人格数据源配置
-export const PERSONA_SOURCES = [
-  'https://gitee.com/yinwm/persona-summoner-hub/raw/main/personas.json',
-  'https://raw.githubusercontent.com/yinwm/persona-summoner-hub/main/personas.json',
-  'https://cdn.jsdelivr.net/gh/yinwm/persona-summoner-hub@main/personas.json'
+// 英雄数据源配置
+export const HERO_SOURCES = [
+  'https://gitee.com/juyitingmcp/juyitingmcp/raw/main/heroes.json',
+  'https://raw.githubusercontent.com/juyitingmcp/juyitingmcp/main/heroes.json',
+  'https://cdn.jsdelivr.net/gh/juyitingmcp/juyitingmcp@main/heroes.json'
 ];
 
-// 默认内置人格（用作降级策略）
-export const DEFAULT_PERSONAS: Persona[] = [
+// 默认内置英雄（用作降级策略）
+export const DEFAULT_HEROES: Hero[] = [
   {
     id: 'baozao-laoge',
     name: '暴躁老哥',
@@ -81,65 +81,65 @@ export const DEFAULT_PERSONAS: Persona[] = [
   }
 ];
 
-// 人格数据源配置接口
-export interface PersonaSourceConfig {
+// 英雄数据源配置接口
+export interface HeroSourceConfig {
   url: string;
   priority: number;
   timeout: number;
   retryAttempts: number;
 }
 
-// 扩展的人格数据源配置
-export const PERSONA_SOURCE_CONFIGS: PersonaSourceConfig[] = [
+// 扩展的英雄数据源配置
+export const HERO_SOURCE_CONFIGS: HeroSourceConfig[] = [
   {
-    url: 'https://gitee.com/yinwm/persona-summoner-hub/raw/main/personas.json',
+    url: 'https://gitee.com/juyiting/juyiting-personas/raw/main/personas.json',
     priority: 1,
     timeout: 10000,
     retryAttempts: 2
   },
   {
-    url: 'https://raw.githubusercontent.com/yinwm/persona-summoner-hub/main/personas.json',
+    url: 'https://raw.githubusercontent.com/juyiting/juyiting-personas/main/personas.json',
     priority: 2,
     timeout: 15000,
     retryAttempts: 3
   },
   {
-    url: 'https://cdn.jsdelivr.net/gh/yinwm/persona-summoner-hub@main/personas.json',
+    url: 'https://cdn.jsdelivr.net/gh/juyitingmcp/juyitingmcp@main/personas.json',
     priority: 3,
     timeout: 12000,
     retryAttempts: 2
   }
 ];
 
-// 人格验证函数
-export function validatePersona(persona: any): persona is Persona {
+// 英雄验证函数
+export function validateHero(hero: any): hero is Hero {
   const requiredFields = ['id', 'name', 'rule', 'goal', 'version'];
   
   return requiredFields.every(field => {
-    const value = persona[field];
+    const value = hero[field];
     return typeof value === 'string' && value.length > 0;
   });
 }
 
-// 人格数据清理函数
-export function sanitizePersona(persona: any): Persona | null {
-  if (!validatePersona(persona)) {
+// 英雄数据清理函数
+export function sanitizeHero(hero: any): Hero | null {
+  if (!validateHero(hero)) {
     return null;
   }
 
   return {
-    id: persona.id.trim(),
-    name: persona.name.trim(),
-    rule: persona.rule.trim(),
-    goal: persona.goal.trim(),
-    version: persona.version.trim(),
-    description: persona.description?.trim(),
-    category: persona.category?.trim(),
-    tags: Array.isArray(persona.tags) ? persona.tags.filter(tag => typeof tag === 'string') : undefined,
-    source: persona.source || 'remote',
-    capabilities: Array.isArray(persona.capabilities) ? persona.capabilities : undefined,
-    limitations: Array.isArray(persona.limitations) ? persona.limitations : undefined,
-    examples: Array.isArray(persona.examples) ? persona.examples : undefined,
-    relatedPersonas: Array.isArray(persona.relatedPersonas) ? persona.relatedPersonas : undefined
+    id: hero.id.trim(),
+    name: hero.name.trim(),
+    rule: hero.rule.trim(),
+    goal: hero.goal.trim(),
+    version: hero.version.trim(),
+    description: hero.description?.trim(),
+    category: hero.category?.trim(),
+    tags: Array.isArray(hero.tags) ? hero.tags.filter((tag: any) => typeof tag === 'string') : undefined,
+    source: hero.source || 'remote',
+    capabilities: Array.isArray(hero.capabilities) ? hero.capabilities : undefined,
+    limitations: Array.isArray(hero.limitations) ? hero.limitations : undefined,
+    examples: Array.isArray(hero.examples) ? hero.examples : undefined,
+    relatedHeroes: Array.isArray(hero.relatedHeroes) ? hero.relatedHeroes : undefined
   };
 } 

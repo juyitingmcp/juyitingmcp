@@ -1,4 +1,4 @@
-import { PersonaSummonerServer } from '../../src/server';
+import { HeroSummonerServer } from '../../src/server';
 import { Persona } from '../../src/types';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -11,7 +11,7 @@ const testPersonas: Persona[] = JSON.parse(fs.readFileSync(testPersonasPath, 'ut
 global.fetch = jest.fn();
 
 describe('MCP服务器集成测试', () => {
-  let server: PersonaSummonerServer;
+  let server: HeroSummonerServer;
   let mockFetch: jest.MockedFunction<typeof fetch>;
 
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe('MCP服务器集成测试', () => {
     
     // 使用测试人格初始化服务器
     const localPersonas = testPersonas.filter(p => p.source === 'local');
-    server = new PersonaSummonerServer(localPersonas);
+    server = new HeroSummonerServer(localPersonas);
   });
 
   afterEach(() => {
@@ -29,12 +29,12 @@ describe('MCP服务器集成测试', () => {
 
   describe('服务器初始化', () => {
     test('应该正确初始化服务器', () => {
-      expect(server).toBeInstanceOf(PersonaSummonerServer);
+      expect(server).toBeInstanceOf(HeroSummonerServer);
     });
 
     test('应该接受空的本地人格列表', () => {
-      const emptyServer = new PersonaSummonerServer([]);
-      expect(emptyServer).toBeInstanceOf(PersonaSummonerServer);
+      const emptyServer = new HeroSummonerServer([]);
+      expect(emptyServer).toBeInstanceOf(HeroSummonerServer);
     });
   });
 

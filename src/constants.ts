@@ -1,10 +1,10 @@
 import { CollaborationMode } from './types.js';
 
-// 人格数据源
-export const PERSONA_SOURCES = [
-  'https://gitee.com/yinwm/persona-summoner-hub/raw/main/personas.json',
-  'https://raw.githubusercontent.com/yinwm/persona-summoner-hub/main/personas.json',
-  'https://cdn.jsdelivr.net/gh/yinwm/persona-summoner-hub@main/personas.json'
+// 英雄数据源
+export const HERO_SOURCES = [
+  'https://gitee.com/juyitingmcp/juyitingmcp/raw/main/heroes.json',
+  'https://raw.githubusercontent.com/juyitingmcp/juyitingmcp/main/heroes.json',
+  'https://cdn.jsdelivr.net/gh/juyitingmcp/juyitingmcp@main/heroes.json'
 ];
 
 // 默认配置
@@ -28,7 +28,7 @@ export const DEFAULT_COLLABORATION_CONFIG = {
 
 // 错误代码
 export const ERROR_CODES = {
-  INVALID_PERSONA: 'INVALID_PERSONA',
+  INVALID_HERO: 'INVALID_HERO',
   CONFIG_NOT_FOUND: 'CONFIG_NOT_FOUND',
   NETWORK_ERROR: 'NETWORK_ERROR',
   AUTH_FAILED: 'AUTH_FAILED',
@@ -38,8 +38,8 @@ export const ERROR_CODES = {
 
 // MCP工具名称
 export const MCP_TOOLS = {
-  SUMMON_PERSONA: 'summon_persona',
-  LIST_PERSONA_CONFIGS: 'list_persona_configs',
-  DOWNLOAD_PERSONA_CONFIG: 'download_persona_config',
+  SUMMON_HERO: 'summon_hero',
+  LIST_HERO_CONFIGS: 'list_hero_configs',
+  DOWNLOAD_HERO_CONFIG: 'download_hero_config',
   START_COLLABORATION: 'start_collaboration'
 } as const; 

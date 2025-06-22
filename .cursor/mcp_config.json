@@ -31,6 +31,29 @@
       "env": {
         "NODE_ENV": "production"
       }
+    },
+    "juyiting-npx": {
+      "command": "npx",
+      "args": [
+        "-y", 
+        "juyiting-mcp-client"
+      ],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "juyiting-npx-with-config": {
+      "command": "npx",
+      "args": [
+        "-y", 
+        "juyiting-mcp-client",
+        "--config",
+        "~/.juyiting/config.json"
+      ],
+      "env": {
+        "NODE_ENV": "production",
+        "JUYITING_CONFIG_PATH": "~/.juyiting/config.json"
+      }
     }
   }
 } 

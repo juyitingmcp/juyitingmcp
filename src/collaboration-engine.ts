@@ -1,9 +1,9 @@
 import { 
-  Persona, 
-  PersonaRepository, 
+  Hero, 
+  HeroRepository, 
   CollaborationConfig, 
   CollaborationResult, 
-  PersonaAnalysis, 
+  HeroAnalysis, 
   CrossValidationResult, 
   SynthesisResult, 
   ActionPlan, 
@@ -21,10 +21,10 @@ class CollaborationSession {
   private id: string;
   private query: string;
   private config: CollaborationConfig;
-  private selectedPersonas: Persona[] = [];
+  private selectedHeroes: Hero[] = [];
   private startTime: number;
   private status: 'pending' | 'running' | 'completed' | 'failed' = 'pending';
-  private analyses: PersonaAnalysis[] = [];
+  private analyses: HeroAnalysis[] = [];
   private result: CollaborationResult | null = null;
 
   constructor(query: string, config: CollaborationConfig) {
@@ -42,21 +42,21 @@ class CollaborationSession {
   getId(): string { return this.id; }
   getQuery(): string { return this.query; }
   getConfig(): CollaborationConfig { return this.config; }
-  getSelectedPersonas(): Persona[] { return this.selectedPersonas; }
+  getSelectedPersonas(): Hero[] { return this.selectedHeroes; }
   getStartTime(): number { return this.startTime; }
   getStatus(): string { return this.status; }
-  getAnalyses(): PersonaAnalysis[] { return this.analyses; }
+  getAnalyses(): HeroAnalysis[] { return this.analyses; }
 
   // Setter methods
-  setSelectedPersonas(personas: Persona[]): void {
-    this.selectedPersonas = personas;
+  setSelectedPersonas(heroes: Hero[]): void {
+    this.selectedHeroes = heroes;
   }
 
   setStatus(status: 'pending' | 'running' | 'completed' | 'failed'): void {
     this.status = status;
   }
 
-  addAnalysis(analysis: PersonaAnalysis): void {
+  addAnalysis(analysis: HeroAnalysis): void {
     this.analyses.push(analysis);
   }
 
@@ -69,7 +69,7 @@ class CollaborationSession {
       id: this.id,
       query: this.query,
       status: this.status,
-      selectedPersonas: this.selectedPersonas.map(p => p.name),
+      selectedHeroes: this.selectedHeroes.map((p: any) => p.name),
       startTime: this.startTime,
       duration: Date.now() - this.startTime
     };
@@ -80,13 +80,13 @@ class CollaborationSession {
  * 协作引擎核心类
  */
 export class CollaborationEngine {
-  private repository: PersonaRepository;
+  private repository: HeroRepository;
   private cache: CacheManager;
   private activeSessions: Map<string, CollaborationSession> = new Map();
   private sessionHistory: CollaborationSession[] = [];
   private maxHistorySize: number = 100;
 
-  constructor(repository: PersonaRepository) {
+  constructor(repository: HeroRepository) {
     this.repository = repository;
     this.cache = new CacheManager();
   }
@@ -108,9 +108,9 @@ export class CollaborationEngine {
       console.log(`🚀 启动协作会话: ${session.getId()}`);
 
       // 1. 智能人格选择
-      const selectedPersonas = await this.selectPersonas(query, fullConfig);
-      session.setSelectedPersonas(selectedPersonas);
-      console.log(`🎭 选中人格: ${selectedPersonas.map(p => p.name).join(', ')}`);
+      const selectedHeroes = await this.selectPersonas(query, fullConfig);
+      session.setSelectedPersonas(selectedHeroes);
+      console.log(`🎭 选中人格: ${selectedHeroes.map((p: any) => p.name).join(', ')}`);
 
       // 2. 执行协作流程
       let result: CollaborationResult;
@@ -149,12 +149,12 @@ export class CollaborationEngine {
   /**
    * 智能人格选择算法
    */
-  private async selectPersonas(query: string, config: CollaborationConfig): Promise<Persona[]> {
-    const allPersonas = await this.repository.getAllPersonas();
+  private async selectPersonas(query: string, config: CollaborationConfig): Promise<Hero[]> {
+    const allPersonas = await this.repository.getAllHeroes();
     
-    if (config.personaIds && config.personaIds.length > 0) {
+    if (config.heroIds && config.heroIds.length > 0) {
       // 指定人格模式
-      const selected = allPersonas.filter(p => config.personaIds!.includes(p.id));
+      const selected = allPersonas.filter((p: any) => config.heroIds!.includes(p.id));
       if (selected.length === 0) {
         throw new Error('指定的人格ID不存在或不可用');
       }
@@ -168,14 +168,14 @@ export class CollaborationEngine {
   /**
    * 智能人格选择逻辑
    */
-  private intelligentPersonaSelection(query: string, personas: Persona[]): Persona[] {
+  private intelligentPersonaSelection(query: string, heroes: Hero[]): Hero[] {
     const queryLower = query.toLowerCase();
     const scores = new Map<string, number>();
 
     // 分析查询类型和关键词
     const queryAnalysis = this.analyzeQuery(queryLower);
     
-    personas.forEach(persona => {
+    heroes.forEach(persona => {
       let score = 0;
 
       // 基于查询类型匹配
@@ -185,7 +185,7 @@ export class CollaborationEngine {
       queryAnalysis.keywords.forEach(keyword => {
         if (persona.goal.toLowerCase().includes(keyword)) score += 3;
         if (persona.description?.toLowerCase().includes(keyword)) score += 2;
-        if (persona.tags?.some(tag => tag.toLowerCase().includes(keyword))) score += 1;
+        if (persona.tags?.some((tag: any) => tag.toLowerCase().includes(keyword))) score += 1;
         if (persona.rule.toLowerCase().includes(keyword)) score += 1;
       });
 
@@ -201,19 +201,19 @@ export class CollaborationEngine {
     });
 
     // 使用优化的选择算法
-    return this.optimizePersonaSelection(personas, scores, query);
+    return this.optimizePersonaSelection(heroes, scores, query);
   }
 
   /**
    * 优化人格组合选择
    */
-  private optimizePersonaSelection(personas: Persona[], scores: Map<string, number>, query: string): Persona[] {
-    const selected: Persona[] = [];
+  private optimizePersonaSelection(heroes: Hero[], scores: Map<string, number>, query: string): Hero[] {
+    const selected: Hero[] = [];
     const maxPersonas = 4;
     const minPersonas = 2;
 
     // 1. 选择得分最高的人格作为基础
-    const sortedPersonas = personas.sort((a, b) => (scores.get(b.id) || 0) - (scores.get(a.id) || 0));
+    const sortedPersonas = heroes.sort((a, b) => (scores.get(b.id) || 0) - (scores.get(a.id) || 0));
     if (sortedPersonas.length > 0 && (scores.get(sortedPersonas[0].id) || 0) > 0) {
       selected.push(sortedPersonas[0]);
     }
@@ -242,31 +242,31 @@ export class CollaborationEngine {
     }
 
     // 确保至少有一个人格
-    return selected.length > 0 ? selected : [personas[0]];
+    return selected.length > 0 ? selected : [heroes[0]];
   }
 
   /**
    * 计算人格多样性得分
    */
-  private calculateDiversityScore(selectedPersonas: Persona[], candidatePersona: Persona): number {
+  private calculateDiversityScore(selectedHeroes: Hero[], candidatePersona: Hero): number {
     let diversityScore = 0;
     
     // 检查类别多样性
-    const categories = new Set(selectedPersonas.map(p => p.category).filter(Boolean));
+    const categories = new Set(selectedHeroes.map((p: any) => p.category).filter(Boolean));
     if (candidatePersona.category && !categories.has(candidatePersona.category)) {
       diversityScore += 3;
     }
 
     // 检查标签多样性
-    const existingTags = new Set(selectedPersonas.flatMap(p => p.tags || []));
-    const newTags = candidatePersona.tags?.filter(tag => !existingTags.has(tag)) || [];
+    const existingTags = new Set(selectedHeroes.flatMap(p => p.tags || []));
+    const newTags = candidatePersona.tags?.filter((tag: any) => !existingTags.has(tag)) || [];
     diversityScore += newTags.length * 0.5;
 
     // 检查思维方式多样性
-    const hasCritical = selectedPersonas.some(p => this.isCriticalPersona(p));
-    const hasCreative = selectedPersonas.some(p => this.isCreativePersona(p));
-    const hasAnalytical = selectedPersonas.some(p => this.isAnalyticalPersona(p));
-    const hasSupportive = selectedPersonas.some(p => this.isSupportivePersona(p));
+    const hasCritical = selectedHeroes.some(p => this.isCriticalPersona(p));
+    const hasCreative = selectedHeroes.some(p => this.isCreativePersona(p));
+    const hasAnalytical = selectedHeroes.some(p => this.isAnalyticalPersona(p));
+    const hasSupportive = selectedHeroes.some(p => this.isSupportivePersona(p));
 
     if (!hasCritical && this.isCriticalPersona(candidatePersona)) diversityScore += 2;
     if (!hasCreative && this.isCreativePersona(candidatePersona)) diversityScore += 2;
@@ -279,12 +279,12 @@ export class CollaborationEngine {
   /**
    * 计算人格互补性得分
    */
-  private calculateComplementaryScore(selectedPersonas: Persona[], candidatePersona: Persona, query: string): number {
+  private calculateComplementaryScore(selectedHeroes: Hero[], candidatePersona: Hero, query: string): number {
     let score = 0;
 
     // 检查是否需要平衡观点
-    const hasCritical = selectedPersonas.some(p => this.isCriticalPersona(p));
-    const hasSupportive = selectedPersonas.some(p => this.isSupportivePersona(p));
+    const hasCritical = selectedHeroes.some(p => this.isCriticalPersona(p));
+    const hasSupportive = selectedHeroes.some(p => this.isSupportivePersona(p));
 
     if (hasCritical && this.isSupportivePersona(candidatePersona)) {
       score += 2; // 批判性思维需要支持性观点平衡
@@ -310,9 +310,9 @@ export class CollaborationEngine {
   /**
    * 判断是否为支持性人格
    */
-  private isSupportivePersona(persona: Persona): boolean {
+  private isSupportivePersona(persona: Hero): boolean {
     return persona.category === 'supportive' ||
-           persona.tags?.some(tag => 
+           persona.tags?.some((tag: any) => 
              ['积极思维', '鼓励支持', '优势发现', '正能量'].includes(tag)
            ) ||
            /鼓励|支持|积极|正面|优点|亮点|粉丝/.test(persona.name.toLowerCase()) ||
@@ -418,7 +418,7 @@ export class CollaborationEngine {
   /**
    * 判断人格类型
    */
-  private isCriticalPersona(persona: Persona): boolean {
+  private isCriticalPersona(persona: Hero): boolean {
     const criticalKeywords = ['批判', '质疑', '挑战', '审视', '暴躁', '严格'];
     return criticalKeywords.some(keyword => 
       persona.name.includes(keyword) || 
@@ -427,7 +427,7 @@ export class CollaborationEngine {
     );
   }
 
-  private isCreativePersona(persona: Persona): boolean {
+  private isCreativePersona(persona: Hero): boolean {
     const creativeKeywords = ['创意', '创新', '想象', '灵感', '艺术', '设计'];
     return creativeKeywords.some(keyword => 
       persona.name.includes(keyword) || 
@@ -436,7 +436,7 @@ export class CollaborationEngine {
     );
   }
 
-  private isAnalyticalPersona(persona: Persona): boolean {
+  private isAnalyticalPersona(persona: Hero): boolean {
     const analyticalKeywords = ['分析', '逻辑', '理性', '数据', '研究', '自省'];
     return analyticalKeywords.some(keyword => 
       persona.name.includes(keyword) || 
@@ -448,7 +448,7 @@ export class CollaborationEngine {
   /**
    * 计算类型匹配分数
    */
-  private calculateTypeScore(persona: Persona, queryType: QueryType): number {
+  private calculateTypeScore(persona: Hero, queryType: QueryType): number {
     const typeMapping: Record<QueryType, string[]> = {
       'analysis': ['分析', '研究', '评估', '自省'],
       'creative': ['创意', '创新', '想象', '设计'],
@@ -474,14 +474,14 @@ export class CollaborationEngine {
    * 并行协作模式
    */
   private async executeParallelCollaboration(session: CollaborationSession): Promise<CollaborationResult> {
-    const personas = session.getSelectedPersonas();
+    const heroes = session.getSelectedPersonas();
     const query = session.getQuery();
 
-    console.log(`🔄 执行并行协作模式，${personas.length} 个人格同时分析`);
+    console.log(`🔄 执行并行协作模式，${heroes.length} 个人格同时分析`);
 
     // 1. 并行人格分析
     const analyses = await Promise.all(
-      personas.map(persona => this.executePersonaAnalysis(persona, query, session))
+      heroes.map(persona => this.executeHeroAnalysis(persona, query, session))
     );
 
     // 2. 交叉验证
@@ -496,7 +496,7 @@ export class CollaborationEngine {
     return {
       sessionId: session.getId(),
       query,
-      selectedPersonas: personas.map(p => p.name),
+      selectedHeroes: heroes.map((p: any) => p.name),
       mode: 'parallel',
       analyses,
       crossValidation,
@@ -510,26 +510,26 @@ export class CollaborationEngine {
    * 顺序协作模式
    */
   private async executeSequentialCollaboration(session: CollaborationSession): Promise<CollaborationResult> {
-    const personas = session.getSelectedPersonas();
+    const heroes = session.getSelectedPersonas();
     const query = session.getQuery();
 
-    console.log(`🔄 执行顺序协作模式，${personas.length} 个人格依次分析`);
+    console.log(`🔄 执行顺序协作模式，${heroes.length} 个人格依次分析`);
 
-    const analyses: PersonaAnalysis[] = [];
+    const analyses: HeroAnalysis[] = [];
     let accumulatedContext = '';
 
     // 顺序执行分析
-    for (let i = 0; i < personas.length; i++) {
-      const persona = personas[i];
+    for (let i = 0; i < heroes.length; i++) {
+      const persona = heroes[i];
       const contextualQuery = this.buildContextualQuery(query, accumulatedContext, i);
       
-      const analysis = await this.executePersonaAnalysis(persona, contextualQuery, session);
+      const analysis = await this.executeHeroAnalysis(persona, contextualQuery, session);
       analyses.push(analysis);
       
       // 累积上下文
       accumulatedContext += `\n\n【${persona.name}的分析】:\n${analysis.analysis}`;
       
-      console.log(`✅ ${persona.name} 分析完成 (${i + 1}/${personas.length})`);
+      console.log(`✅ ${persona.name} 分析完成 (${i + 1}/${heroes.length})`);
     }
 
     // 交叉验证和综合分析
@@ -540,7 +540,7 @@ export class CollaborationEngine {
     return {
       sessionId: session.getId(),
       query,
-      selectedPersonas: personas.map(p => p.name),
+      selectedHeroes: heroes.map((p: any) => p.name),
       mode: 'sequential',
       analyses,
       crossValidation,
@@ -554,14 +554,14 @@ export class CollaborationEngine {
    * 智能协作模式
    */
   private async executeIntelligentCollaboration(session: CollaborationSession): Promise<CollaborationResult> {
-    const personas = session.getSelectedPersonas();
+    const heroes = session.getSelectedPersonas();
     const query = session.getQuery();
 
     console.log(`🧠 执行智能协作模式，动态调整协作流程`);
 
     // 智能决策：根据查询复杂度和人格特性选择最佳协作方式
     const complexity = this.assessQueryComplexity(query);
-    const personaTypes = this.analyzePersonaTypes(personas);
+    const personaTypes = this.analyzePersonaTypes(heroes);
 
     if (complexity > 0.7 && personaTypes.hasComplementary) {
       // 复杂查询且人格互补 -> 混合模式
@@ -579,18 +579,18 @@ export class CollaborationEngine {
    * 混合协作模式
    */
   private async executeHybridCollaboration(session: CollaborationSession): Promise<CollaborationResult> {
-    const personas = session.getSelectedPersonas();
+    const heroes = session.getSelectedPersonas();
     const query = session.getQuery();
 
     console.log(`🔀 执行混合协作模式`);
 
     // 第一轮：并行初始分析
     const initialAnalyses = await Promise.all(
-      personas.map(persona => this.executePersonaAnalysis(persona, query, session))
+      heroes.map(persona => this.executeHeroAnalysis(persona, query, session))
     );
 
     // 第二轮：基于初始分析的深度对话
-    const dialogueAnalyses = await this.executeRoundTableDiscussion(personas, query, initialAnalyses, session);
+    const dialogueAnalyses = await this.executeRoundTableDiscussion(heroes, query, initialAnalyses, session);
 
     // 合并分析结果
     const allAnalyses = [...initialAnalyses, ...dialogueAnalyses];
@@ -602,7 +602,7 @@ export class CollaborationEngine {
     return {
       sessionId: session.getId(),
       query,
-      selectedPersonas: personas.map(p => p.name),
+      selectedHeroes: heroes.map((p: any) => p.name),
       mode: 'intelligent-hybrid',
       analyses: allAnalyses,
       crossValidation,
@@ -616,20 +616,20 @@ export class CollaborationEngine {
    * 对话协作模式
    */
   private async executeDialogueCollaboration(session: CollaborationSession): Promise<CollaborationResult> {
-    const personas = session.getSelectedPersonas();
+    const heroes = session.getSelectedPersonas();
     const query = session.getQuery();
 
     console.log(`💬 执行对话协作模式`);
 
-    const analyses: PersonaAnalysis[] = [];
+    const analyses: HeroAnalysis[] = [];
     const maxRounds = session.getConfig().maxRounds || 3;
 
     for (let round = 1; round <= maxRounds; round++) {
       console.log(`🔄 对话轮次 ${round}/${maxRounds}`);
       
-      for (const persona of personas) {
+      for (const persona of heroes) {
         const contextualQuery = this.buildDialogueContext(query, analyses, round);
-        const analysis = await this.executePersonaAnalysis(persona, contextualQuery, session);
+        const analysis = await this.executeHeroAnalysis(persona, contextualQuery, session);
         analyses.push(analysis);
       }
     }
@@ -641,7 +641,7 @@ export class CollaborationEngine {
     return {
       sessionId: session.getId(),
       query,
-      selectedPersonas: personas.map(p => p.name),
+      selectedHeroes: heroes.map((p: any) => p.name),
       mode: 'intelligent-dialogue',
       analyses,
       crossValidation,
@@ -654,11 +654,11 @@ export class CollaborationEngine {
   /**
    * 执行单个人格分析
    */
-  private async executePersonaAnalysis(
-    persona: Persona, 
+  private async executeHeroAnalysis(
+    persona: Hero, 
     query: string, 
     session: CollaborationSession
-  ): Promise<PersonaAnalysis> {
+  ): Promise<HeroAnalysis> {
     const startTime = Date.now();
     
     try {
@@ -666,11 +666,11 @@ export class CollaborationEngine {
       const prompt = this.buildPersonaPrompt(persona, query);
       
       // 模拟人格分析（实际项目中这里会调用AI模型）
-      const analysis = await this.simulatePersonaAnalysis(persona, query, prompt);
+      const analysis = await this.simulateHeroAnalysis(persona, query, prompt);
       
-      const result: PersonaAnalysis = {
-        personaId: persona.id,
-        personaName: persona.name,
+      const result: HeroAnalysis = {
+        heroId: persona.id,
+        heroName: persona.name,
         query,
         analysis,
         confidence: this.calculateConfidence(analysis),
@@ -682,9 +682,9 @@ export class CollaborationEngine {
       return result;
       
     } catch (error) {
-      const errorResult: PersonaAnalysis = {
-        personaId: persona.id,
-        personaName: persona.name,
+      const errorResult: HeroAnalysis = {
+        heroId: persona.id,
+        heroName: persona.name,
         query,
         analysis: `分析失败: ${error instanceof Error ? error.message : String(error)}`,
         confidence: 0,
@@ -701,7 +701,7 @@ export class CollaborationEngine {
   /**
    * 构建人格提示
    */
-  private buildPersonaPrompt(persona: Persona, query: string): string {
+  private buildPersonaPrompt(persona: Hero, query: string): string {
     return `你现在是"${persona.name}"，你的角色设定如下：
 
 **目标**: ${persona.goal}
@@ -724,7 +724,7 @@ ${query}
   /**
    * 模拟人格分析
    */
-  private async simulatePersonaAnalysis(persona: Persona, query: string, prompt: string): Promise<string> {
+  private async simulateHeroAnalysis(persona: Hero, query: string, prompt: string): Promise<string> {
     // 模拟分析延迟
     await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
 
@@ -737,8 +737,8 @@ ${query}
   /**
    * 生成模拟分析内容
    */
-  private generateSimulatedAnalysis(persona: Persona, query: string): string {
-    const templates = this.getPersonaTemplates(persona);
+  private generateSimulatedAnalysis(persona: Hero, query: string): string {
+    const templates = this.getHeroTemplates(persona);
     const template = templates[Math.floor(Math.random() * templates.length)];
     
     return template.replace('{query}', query).replace('{persona}', persona.name);
@@ -747,7 +747,7 @@ ${query}
   /**
    * 获取人格分析模板
    */
-  private getPersonaTemplates(persona: Persona): string[] {
+  private getHeroTemplates(persona: Hero): string[] {
     // 根据人格特性返回不同的分析模板
     if (this.isCriticalPersona(persona)) {
       return [
@@ -785,7 +785,7 @@ ${query}
   /**
    * 交叉验证分析结果
    */
-  private async executeCrossValidation(analyses: PersonaAnalysis[]): Promise<CrossValidationResult> {
+  private async executeCrossValidation(analyses: HeroAnalysis[]): Promise<CrossValidationResult> {
     if (analyses.length < 2) {
       return {
         commonPoints: ['单一人格分析，无法进行交叉验证'],
@@ -818,7 +818,7 @@ ${query}
   /**
    * 提取共同观点
    */
-  private extractCommonPoints(analyses: PersonaAnalysis[]): string[] {
+  private extractCommonPoints(analyses: HeroAnalysis[]): string[] {
     const allKeywords = analyses.map(analysis => 
       this.extractKeywords(analysis.analysis.toLowerCase())
     );
@@ -859,7 +859,7 @@ ${query}
   /**
    * 识别分歧点
    */
-  private identifyDisagreements(analyses: PersonaAnalysis[]): string[] {
+  private identifyDisagreements(analyses: HeroAnalysis[]): string[] {
     const disagreements: string[] = [];
     
     // 检查情感倾向的分歧
@@ -882,7 +882,7 @@ ${query}
 
     // 检查关键词的分歧
     const personaTypes = analyses.map(analysis => {
-      const persona = analysis.personaName;
+      const persona = analysis.heroName;
       if (persona.includes('暴躁') || persona.includes('批判')) return 'critical';
       if (persona.includes('粉丝') || persona.includes('支持')) return 'supportive';
       return 'neutral';
@@ -901,7 +901,7 @@ ${query}
   /**
    * 综合建议
    */
-  private synthesizeRecommendations(analyses: PersonaAnalysis[]): string[] {
+  private synthesizeRecommendations(analyses: HeroAnalysis[]): string[] {
     const allRecommendations = analyses.flatMap(analysis => 
       this.extractRecommendations(analysis.analysis)
     );
@@ -930,7 +930,7 @@ ${query}
   private calculateValidationConfidence(
     commonPoints: string[], 
     disagreements: string[], 
-    analyses: PersonaAnalysis[]
+    analyses: HeroAnalysis[]
   ): number {
     let confidence = 0.5;
 
@@ -995,7 +995,7 @@ ${query}
     return recommendations;
   }
 
-  private async synthesizeResults(analyses: PersonaAnalysis[], crossValidation: CrossValidationResult): Promise<SynthesisResult> {
+  private async synthesizeResults(analyses: HeroAnalysis[], crossValidation: CrossValidationResult): Promise<SynthesisResult> {
     // 简化的综合分析实现
     return {
       summary: '综合分析结果摘要',
@@ -1033,19 +1033,19 @@ ${query}
     return query.length > 100 ? 0.8 : 0.5;
   }
 
-  private analyzePersonaTypes(personas: Persona[]): { hasComplementary: boolean; hasCritical: boolean; hasCreative: boolean } {
+  private analyzePersonaTypes(heroes: Hero[]): { hasComplementary: boolean; hasCritical: boolean; hasCreative: boolean } {
     return {
-      hasComplementary: personas.length > 2,
-      hasCritical: personas.some(p => this.isCriticalPersona(p)),
-      hasCreative: personas.some(p => this.isCreativePersona(p))
+      hasComplementary: heroes.length > 2,
+      hasCritical: heroes.some(p => this.isCriticalPersona(p)),
+      hasCreative: heroes.some(p => this.isCreativePersona(p))
     };
   }
 
-  private async executeRoundTableDiscussion(personas: Persona[], query: string, initialAnalyses: PersonaAnalysis[], session: CollaborationSession): Promise<PersonaAnalysis[]> {
+  private async executeRoundTableDiscussion(heroes: Hero[], query: string, initialAnalyses: HeroAnalysis[], session: CollaborationSession): Promise<HeroAnalysis[]> {
     return []; // 简化实现
   }
 
-  private buildDialogueContext(query: string, analyses: PersonaAnalysis[], round: number): string {
+  private buildDialogueContext(query: string, analyses: HeroAnalysis[], round: number): string {
     return query;
   }
 
