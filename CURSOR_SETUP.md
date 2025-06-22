@@ -95,9 +95,9 @@ Cursor 的 MCP 配置文件位置：
 
 配置成功后，聚义厅 MCP 客户端提供以下工具：
 
-1. **summon_persona** - 召唤指定人格
-2. **list_personas** - 列出所有可用人格
-3. **search_personas** - 搜索人格
+1. **summon_hero** - 召唤指定英雄
+2. **list_heroes** - 列出所有可用英雄
+3. **search_heroes** - 搜索英雄
 
 ## 使用示例
 

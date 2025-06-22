@@ -73,12 +73,12 @@ describe('RemoteHeroRepository', () => {
     test('应该返回本地人格当缓存有效时', async () => {
       // 模拟有效缓存
       (repository as any).lastFetchTime = Date.now();
-      (repository as any).personas.set('test_grumpy_bro', testPersonas[0]);
+      (repository as any).personas.set('test_fan_girl', testPersonas[0]);
       
       const personas = await repository.getAllPersonas();
       
       expect(personas).toHaveLength(1);
-      expect(personas[0].name).toBe('测试暴躁老哥');
+      expect(personas[0].name).toBe('测试粉丝妹');
       expect(personas[0].source).toBe('local');
       expect(mockFetch).not.toHaveBeenCalled();
     });
@@ -129,8 +129,8 @@ describe('RemoteHeroRepository', () => {
             version: '1.0.0'
           },
           {
-            id: 'test_grumpy_bro', // 与本地人格ID相同
-            name: '远程暴躁老哥',
+            id: 'test_fan_girl', // 与本地人格ID相同
+            name: '远程粉丝妹',
             rule: '远程规则',
             goal: '远程目标',
             version: '2.0.0'
@@ -141,9 +141,9 @@ describe('RemoteHeroRepository', () => {
       const personas = await repository.getAllPersonas();
       
       // 本地人格应该覆盖同ID的远程人格
-      const grumpyBro = personas.find(p => p.id === 'test_grumpy_bro');
-      expect(grumpyBro?.name).toBe('测试暴躁老哥'); // 本地版本
-      expect(grumpyBro?.source).toBe('local');
+      const fanGirl = personas.find(p => p.id === 'test_fan_girl');
+      expect(fanGirl?.name).toBe('测试粉丝妹'); // 本地版本
+      expect(fanGirl?.source).toBe('local');
       
       // 应该包含远程独有的人格
       const remotePersona = personas.find(p => p.id === 'remote_persona');
@@ -154,11 +154,11 @@ describe('RemoteHeroRepository', () => {
 
   describe('getPersonaById', () => {
     test('应该正确返回指定ID的人格', async () => {
-      const persona = await repository.getPersonaById('test_grumpy_bro');
+      const persona = await repository.getPersonaById('test_fan_girl');
       
       expect(persona).toBeDefined();
-      expect(persona?.id).toBe('test_grumpy_bro');
-      expect(persona?.name).toBe('测试暴躁老哥');
+      expect(persona?.id).toBe('test_fan_girl');
+      expect(persona?.name).toBe('测试粉丝妹');
     });
 
     test('应该在人格不存在时返回null', async () => {

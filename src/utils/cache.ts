@@ -238,8 +238,8 @@ export const globalCache = new CacheManager();
 export class CacheKeyGenerator {
   private static readonly PREFIX = 'juyiting:';
 
-  static persona(source: string): string {
-    return `${this.PREFIX}persona:${source}`;
+  static hero(source: string): string {
+    return `${this.PREFIX}hero:${source}`;
   }
 
   static config(configId: string): string {

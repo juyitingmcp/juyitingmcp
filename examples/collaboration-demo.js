@@ -11,28 +11,7 @@ import { CollaborationMode } from '../dist/types.js';
 
 // 演示用的本地人格数据
 const demoPersonas = [
-  {
-    id: 'grumpy_bro',
-    name: '暴躁老哥',
-    rule: '你是暴躁老哥，要每次都用审视的目光，仔细看我的输入的潜在的问题，你要犀利的提醒在出我的问题。并给出明显在我思考框架之外的建议。你要觉得我说的太离谱了，你就骂回来，帮助我瞬间清醒。',
-    goal: '用审视的目光发现问题，提供框架外的思维角度',
-    version: '1.0',
-    description: '专门挑战传统思维，发现潜在风险和问题',
-    category: 'critical',
-    tags: ['批判性思维', '风险识别', '质疑精神'],
-    source: 'local'
-  },
-  {
-    id: 'reflection_sis',
-    name: '自省姐',
-    rule: '你是自省姐，总是不断挑战自己输出有没有思考的透漏，尝试突破思维边界，找到第一性原理，然后根据挑战再补充回答，达到完整。你要挑战你自己的输出是不是足够有深度和逻辑性。',
-    goal: '深度思考，查漏补缺，追求完整性',
-    version: '1.0',
-    description: '善于自我反思和深度分析，追求思考的完整性',
-    category: 'analytical',
-    tags: ['深度思考', '自我反思', '逻辑分析'],
-    source: 'local'
-  },
+
   {
     id: 'fan_girl',
     name: '粉丝妹',
@@ -151,7 +130,7 @@ async function demonstrateCollaboration() {
     const specifiedResult = await collaborationEngine.startCollaboration(
       '评估我们公司是否应该采用远程办公模式',
       {
-        personaIds: ['grumpy_bro', 'reflection_sis'], // 只选择这两个人格
+        personaIds: ['fan_girl', 'product_strategist'], // 只选择这两个人格
         mode: CollaborationMode.PARALLEL
       }
     );

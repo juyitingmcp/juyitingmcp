@@ -7,20 +7,7 @@
     "createdAt": "2025-01-15T10:00:00Z",
     "updatedAt": "2025-01-15T10:00:00Z",
     "personas": [
-      {
-        "id": "test_grumpy_bro",
-        "name": "测试暴躁老哥",
-        "rule": "你是测试版暴躁老哥，要用审视的目光发现问题，提供框架外的思维角度。",
-        "goal": "发现问题，批评指正，提供不同角度的思考",
-        "version": "1.0.0"
-      },
-      {
-        "id": "test_reflection_sis",
-        "name": "测试自省姐",
-        "rule": "你是测试版自省姐，总是不断挑战输出，寻找思考盲点，追溯第一性原理。",
-        "goal": "深度思考，查漏补缺，完善分析",
-        "version": "1.0.0"
-      },
+
       {
         "id": "test_fan_girl",
         "name": "测试粉丝妹",
@@ -56,17 +43,10 @@
     "updatedAt": "2025-01-15T09:45:00Z",
     "personas": [
       {
-        "id": "test_grumpy_bro",
-        "name": "测试暴躁老哥",
-        "rule": "专注于技术风险和问题发现",
-        "goal": "技术风险评估和问题识别",
-        "version": "1.0.0"
-      },
-      {
-        "id": "test_reflection_sis",
-        "name": "测试自省姐",
-        "rule": "深度分析技术架构和设计原理",
-        "goal": "技术架构深度分析",
+        "id": "test_fan_girl",
+        "name": "测试粉丝妹",
+        "rule": "发现技术方案的优势和亮点",
+        "goal": "技术优势识别和积极评估",
         "version": "1.0.0"
       }
     ],

@@ -1,5 +1,17 @@
 #!/usr/bin/env node
 
+/**
+ * 聚义厅MCP客户端 - AI英雄协作工具
+ * 
+ * 本项目灵感来源于大铭老师 (@yinwm) 的 persona-summoner 项目
+ * 原项目地址: https://github.com/yinwm/persona-summoner
+ * 
+ * 感谢大铭老师在AI人格探索领域的开创性贡献！
+ * 
+ * @author 聚义厅技术团队
+ * @license MIT
+ */
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
@@ -65,7 +77,7 @@ server.registerTool(
     title: '召唤英雄',
     description: '从聚义厅召唤指定的英雄角色',
     inputSchema: {
-      name: z.string().describe('英雄名称，如：暴躁老哥、暖心姐姐、拆解大师等')
+      name: z.string().describe('英雄名称，如：粉丝妹、小布丁、暖心姐姐、拆解大师等')
     }
   },
   async ({ name }) => {
@@ -290,7 +302,7 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
   juyiting-mcp --debug
   
 MCP工具使用：
-  召唤英雄: summon_hero({"name": "暴躁老哥"})
+  召唤英雄: summon_hero({"name": "小布丁"})
   列出英雄: list_heroes({})
   搜索英雄: search_heroes({"keyword": "暴躁"})
 `);

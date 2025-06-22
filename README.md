@@ -2,6 +2,15 @@
 
 > 🚀 基于 Model Context Protocol (MCP) 的AI人格协作工具，支持多人格智能召唤、配置同步和协作分析
 
+## 🙏 致谢声明
+
+本项目灵感来源于 [大铭老师的 persona-summoner 项目](https://github.com/yinwm/persona-summoner)，感谢大铭老师在AI人格探索领域的开创性工作和无私分享！
+
+聚义厅MCP在原项目基础上进行了重新设计和扩展，增加了配置同步、协作引擎、多模式分析等功能，旨在为用户提供更完整的AI人格协作体验。
+
+**原项目链接**: https://github.com/yinwm/persona-summoner  
+**特别感谢**: 大铭老师 (@yinwm) 在AI人格召唤和多人格协作方面的探索和贡献
+
 <!-- 专业徽章区域 - 让项目看起来更权威 -->
 <div align="center">
 
@@ -24,7 +33,7 @@
 
 ### ✨ 主要特性
 
-- 🎭 **多人格协作**: 支持暴躁老哥、自省姐、粉丝妹等多种AI人格
+- 🎭 **多人格协作**: 支持粉丝妹、小布丁、暖心姐姐等多种AI英雄
 - ⚙️ **配置同步**: 用户在Web平台配置，MCP客户端自动同步
 - 🤝 **智能协作**: 支持并行、顺序、智能三种协作模式
 - 🔧 **标准化接口**: 严格遵循MCP协议规范，兼容Cursor、Claude Desktop等
@@ -35,10 +44,10 @@
 
 | 工具名称 | 描述 | 参数 |
 |---------|------|------|
-| `summon_persona` | 召唤指定人格进行单独分析 | `persona_name` |
-| `list_persona_configs` | 查看用户的人格配置列表 | 无 |
-| `download_persona_config` | 下载指定配置到本地 | `configId` |
-| `start_collaboration` | 启动多人格协作分析 | `query`, `personaIds?` |
+| `summon_hero` | 召唤指定英雄进行单独分析 | `hero_name` |
+| `list_hero_configs` | 查看用户的英雄配置列表 | 无 |
+| `download_hero_config` | 下载指定配置到本地 | `configId` |
+| `start_collaboration` | 启动多英雄协作分析 | `query`, `heroIds?` |
 
 ## 📦 安装
 
@@ -128,7 +137,7 @@ echo '{
 
 ```
 # 召唤单个人格
-@juyiting 召唤暴躁老哥，帮我分析这个商业计划
+@juyiting 召唤小布丁，帮我分析这个商业计划
 
 # 查看配置列表
 @juyiting 查看我的人格配置列表
@@ -142,18 +151,18 @@ echo '{
 
 ## 📋 API 文档
 
-### 工具：summon_persona
+### 工具：summon_hero
 
-**描述**: 召唤指定AI人格进行专业分析
+**描述**: 召唤指定AI英雄进行专业分析
 
 **参数**:
-- `persona_name` (string, 必需): 人格名称或ID
+- `hero_name` (string, 必需): 英雄名称或ID
 
-**支持的人格**:
-- `暴躁老哥` - 犀利批评，框架外思维
-- `自省姐` - 深度思考，查漏补缺  
+**支持的英雄**:
 - `粉丝妹` - 发现亮点，放大优势
 - `小布丁` - 商业分析，产品策略
+- `暖心姐姐` - 温暖贴心，细致关怀
+- `思维帝` - 结构化思维，MECE分析
 
 **返回值**:
 ```
@@ -169,7 +178,7 @@ echo '{
 
 **参数**:
 - `query` (string, 必需): 分析问题
-- `personaIds` (string[], 可选): 指定参与协作的人格ID列表
+- `heroIds` (string[], 可选): 指定参与协作的英雄ID列表
 
 **协作模式**:
 - `parallel` - 并行分析模式，多人格同时分析
@@ -211,7 +220,7 @@ echo '{
 {
   "userKey": "string",                    // 聚义厅Web平台获取的API密钥
   "apiBaseUrl": "string",                 // API服务地址，默认官方服务
-  "currentConfig": "PersonaConfig",       // 当前激活的人格配置
+  "currentConfig": "HeroConfig",          // 当前激活的英雄配置
   "lastSyncTime": "string",              // 最后同步时间
   
   "cache": {
@@ -243,7 +252,7 @@ npm install
 npm run dev
 
 # 使用本地人格文件
-npm run dev -- --personas ./examples/local-personas.json
+npm run dev -- --heroes ./examples/local-heroes.json
 ```
 
 ### 项目结构
@@ -253,8 +262,8 @@ src/
 ├── server.ts              # MCP服务器主入口
 ├── types.ts               # 核心类型定义
 ├── constants.ts           # 常量配置
-├── persona-repository.ts  # 人格仓库管理
-├── persona-sources.ts     # 人格数据源配置
+├── hero-repository.ts     # 英雄仓库管理
+├── hero-sources.ts        # 英雄数据源配置
 ├── collaboration-engine.ts # 协作引擎核心
 ├── config-synchronizer.ts # 配置同步器
 ├── telemetry.ts          # 遥测数据收集
@@ -396,15 +405,7 @@ curl -I https://api.juyiting.com/health
 
 ## 🌟 核心人格介绍
 
-### 🔥 暴躁老哥 (grumpy_bro)
-- **定位**: 犀利批评家，框架外思维专家
-- **特长**: 发现潜在问题，提供非常规建议
-- **适用场景**: 风险评估、批判性分析、决策审查
 
-### 🤔 自省姐 (reflection_sis)  
-- **定位**: 深度思考者，完善主义者
-- **特长**: 查漏补缺，深化分析深度
-- **适用场景**: 方案优化、逻辑验证、思维完善
 
 ### 💕 粉丝妹 (fan_girl)
 - **定位**: 积极支持者，亮点发现专家
@@ -427,6 +428,12 @@ curl -I https://api.juyiting.com/health
 - **支持平台**: macOS, Windows, Linux
 
 ## 🙏 致谢
+
+### 🌟 特别感谢
+
+- **[大铭老师 (@yinwm)](https://github.com/yinwm)** - [persona-summoner 项目](https://github.com/yinwm/persona-summoner)的创作者，在AI人格探索领域的先驱者。本项目的核心理念和人格设计都深受其启发，感谢他的开创性工作和无私分享！
+
+### 🛠️ 技术致谢
 
 - [Model Context Protocol](https://modelcontextprotocol.io/) - 提供了优秀的协议规范
 - [TypeScript](https://www.typescriptlang.org/) - 强大的类型系统支持

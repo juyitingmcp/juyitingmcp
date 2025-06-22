@@ -285,8 +285,8 @@ export class ConfigSynchronizer {
 
     // 验证每个英雄
     config.heroes.forEach((hero: any, index: any) => {
-      const personaRequired: (keyof typeof hero)[] = ['id', 'name', 'rule', 'goal'];
-      for (const field of personaRequired) {
+          const heroRequired: (keyof typeof hero)[] = ['id', 'name', 'rule', 'goal'];
+    for (const field of heroRequired) {
         if (!hero[field]) {
           throw new Error(`英雄 ${index + 1} 缺少必需字段: ${String(field)}`);
         }

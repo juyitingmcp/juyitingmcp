@@ -92,19 +92,19 @@ export interface HeroSourceConfig {
 // 扩展的英雄数据源配置
 export const HERO_SOURCE_CONFIGS: HeroSourceConfig[] = [
   {
-    url: 'https://gitee.com/juyiting/juyiting-personas/raw/main/personas.json',
+    url: 'https://gitee.com/juyiting/juyiting-heroes/raw/main/heroes.json',
     priority: 1,
     timeout: 10000,
     retryAttempts: 2
   },
   {
-    url: 'https://raw.githubusercontent.com/juyiting/juyiting-personas/main/personas.json',
+    url: 'https://raw.githubusercontent.com/juyiting/juyiting-heroes/main/heroes.json',
     priority: 2,
     timeout: 15000,
     retryAttempts: 3
   },
   {
-    url: 'https://cdn.jsdelivr.net/gh/juyitingmcp/juyitingmcp@main/personas.json',
+    url: 'https://cdn.jsdelivr.net/gh/juyitingmcp/juyitingmcp@main/heroes.json',
     priority: 3,
     timeout: 12000,
     retryAttempts: 2

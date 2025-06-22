@@ -27,9 +27,7 @@ interface SummonPersonaArgs {
 }
 ```
 
-### 支持的人格
-- **暴躁老哥** (grumpy_bro): 犀利批评，框架外思维
-- **自省姐** (reflection_sis): 深度思考，查漏补缺
+### 支持的英雄
 - **粉丝妹** (fan_girl): 发现亮点，放大优势
 - **小布丁** (product_strategist): 商业分析，产品策略
 
@@ -129,7 +127,7 @@ interface StartCollaborationArgs {
 ```json
 {
   "query": "分析这个SaaS产品的商业模式",
-  "personaIds": ["grumpy_bro", "reflection_sis"]  // 可选
+  "personaIds": ["fan_girl", "product_strategist"]  // 可选
 }
 ```
 

@@ -1,7 +1,7 @@
 import { Hero, HeroRepository, HeroConfig } from './types.js';
 import { DEFAULT_HEROES, HERO_SOURCES, validateHero, sanitizeHero } from './hero-sources.js';
 import { CacheManager, CacheKeyGenerator } from './utils/cache.js';
-import { fetchPersonaData } from './utils/network.js';
+import { fetchHeroData } from './utils/network.js';
 import { DEFAULT_CONFIG } from './constants.js';
 
 /**
@@ -101,7 +101,7 @@ export class RemoteHeroRepository implements HeroRepository {
     
     for (const url of HERO_SOURCES) {
       try {
-        const rawData = await fetchPersonaData(url);
+        const rawData = await fetchHeroData(url);
         if (rawData.length > 0) {
           const heroes = this.processRemoteHeroes(rawData);
           if (heroes.length > 0) {

@@ -334,39 +334,47 @@ export async function fetchWithRetry<T = any>(
 }
 
 /**
- * 人格数据专用请求函数
- * @param url 人格数据URL
- * @returns 人格数据数组
+ * 英雄数据专用请求函数
+ * @param url 英雄数据URL
+ * @returns 英雄数据数组
  */
-export async function fetchPersonaData(url: string): Promise<any[]> {
-  try {
-    console.error(`正在从 ${url} 获取人格数据...`);
-    
-    const result = await networkManager.get(url, {
-      timeout: 15000,
-      retryAttempts: 2,
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'JuYiTing-MCP-Client/1.0'
-      }
-    });
+export async function fetchHeroData(url: string): Promise<any[]> {
+  const config: RequestConfig = {
+    timeout: 15000,
+    retryAttempts: 3,
+    retryDelay: 1000,
+    headers: {
+      'Accept': 'application/json',
+      'User-Agent': 'JuYiTing-MCP/1.0'
+    }
+  };
 
-    const data = result.data;
-    const personas = Array.isArray(data) ? data : [];
+  try {
+    const result = await networkManager.get(url, config);
     
-    console.error(`成功获取 ${personas.length} 个人格`);
-    return personas;
+    if (!Array.isArray(result.data)) {
+      throw new NetworkError(
+        '英雄数据格式错误：应为数组',
+        'INVALID_FORMAT',
+        result.status,
+        url
+      );
+    }
+
+    console.log(`成功获取 ${result.data.length} 个英雄数据 (耗时: ${result.executionTime}ms)`);
+    return result.data;
+    
   } catch (error) {
     if (error instanceof NetworkError) {
-      if (error.code === 'TIMEOUT') {
-        console.warn(`获取超时: ${url}`);
-      } else {
-        console.warn(`获取失败 ${url}: ${error.message}`);
-      }
-    } else {
-      console.warn(`获取失败 ${url}:`, error instanceof Error ? error.message : String(error));
+      throw error;
     }
-    return [];
+    
+    throw new NetworkError(
+      `获取英雄数据失败: ${error instanceof Error ? error.message : String(error)}`,
+      'FETCH_ERROR',
+      undefined,
+      url
+    );
   }
 }
 

@@ -16,7 +16,7 @@ describe('参数验证系统', () => {
   describe('Schema验证', () => {
     describe('PersonaNameSchema', () => {
       test('应该接受有效的人格名称', () => {
-        const validNames = ['暴躁老哥', 'grumpy_bro', '测试人格123', 'Test Persona'];
+        const validNames = ['粉丝妹', 'fan_girl', '测试人格123', 'Test Persona'];
         
         validNames.forEach(name => {
           expect(() => PersonaNameSchema.parse(name)).not.toThrow();

@@ -60,7 +60,7 @@
    git add .
    
    # 提交（使用规范的提交信息）
-   git commit -m "feat: add new persona collaboration feature"
+   git commit -m "feat: add new hero collaboration feature"
    ```
 
 6. **推送和创建PR**
@@ -90,7 +90,7 @@
 feat(collaboration): add intelligent collaboration mode
 fix(config): resolve config sync timeout issue
 docs: update API documentation
-test: add unit tests for persona repository
+test: add unit tests for hero repository
 ```
 
 ### 代码风格
@@ -105,12 +105,12 @@ test: add unit tests for persona repository
 /**
  * 启动多人格协作分析
  * @param query 分析问题
- * @param personaIds 可选的人格ID列表
+ * @param heroIds 可选的英雄ID列表
  * @returns 协作分析结果
  */
 async function startCollaboration(
   query: string,
-  personaIds?: string[]
+  heroIds?: string[]
 ): Promise<CollaborationResult> {
   // 实现逻辑
 }
@@ -124,8 +124,8 @@ async function startCollaboration(
 - 使用描述性的测试用例名称
 
 ```typescript
-describe('PersonaRepository', () => {
-  test('should load personas from multiple sources', async () => {
+describe('HeroRepository', () => {
+  test('should load heroes from multiple sources', async () => {
     // 测试逻辑
   });
   
@@ -142,8 +142,8 @@ src/
 ├── server.ts               # MCP服务器主入口
 ├── types.ts                # 核心类型定义
 ├── constants.ts            # 常量配置
-├── persona-repository.ts   # 人格仓库管理
-├── persona-sources.ts      # 人格数据源配置
+├── hero-repository.ts      # 英雄仓库管理
+├── hero-sources.ts         # 英雄数据源配置
 ├── collaboration-engine.ts # 协作引擎核心
 ├── config-synchronizer.ts  # 配置同步器
 ├── telemetry.ts           # 遥测数据收集

@@ -5,31 +5,31 @@ import { z } from 'zod';
  */
 
 // 基础验证schemas
-export const PersonaNameSchema = z.string().min(1, '人格名称不能为空').max(50, '人格名称过长');
+export const HeroNameSchema = z.string().min(1, '英雄名称不能为空').max(50, '英雄名称过长');
 
 export const ConfigIdSchema = z.string().min(1, '配置ID不能为空').regex(/^[a-zA-Z0-9_-]+$/, '配置ID格式无效');
 
 export const QuerySchema = z.string().min(5, '查询内容至少需要5个字符').max(2000, '查询内容过长（最多2000字符）');
 
-export const PersonaIdsSchema = z.array(z.string()).optional().refine(
+export const HeroIdsSchema = z.array(z.string()).optional().refine(
   (arr) => !arr || arr.length <= 10,
-  '最多只能指定10个人格'
+  '最多只能指定10个英雄'
 );
 
 export const CollaborationModeSchema = z.enum(['parallel', 'sequential', 'intelligent']).optional();
 
 // MCP工具参数schemas
-export const SummonPersonaArgsSchema = z.object({
-  persona_name: PersonaNameSchema
+export const SummonHeroArgsSchema = z.object({
+  hero_name: HeroNameSchema
 });
 
-export const DownloadPersonaConfigArgsSchema = z.object({
+export const DownloadHeroConfigArgsSchema = z.object({
   configId: ConfigIdSchema
 });
 
 export const StartCollaborationArgsSchema = z.object({
   query: QuerySchema,
-  personaIds: PersonaIdsSchema,
+  heroIds: HeroIdsSchema,
   mode: CollaborationModeSchema
 });
 
