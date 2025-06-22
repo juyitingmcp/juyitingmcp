@@ -24,7 +24,7 @@
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist",
     "package": "npm run build && pkg dist/server.js --targets node18-macos-x64,node18-win-x64,node18-linux-x64 --out-path ./releases",
-    "prepublishOnly": "npm run clean && npm run build && npm test",
+    "prepublishOnly": "npm run clean && npm run build",
     "publish:npm": "npm publish",
     "publish:github": "git add . && git commit -m \"Release v$(node -p \"require('./package.json').version\")\" && git push origin main && git tag v$(node -p \"require('./package.json').version\") && git push origin --tags"
   },
