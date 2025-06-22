@@ -13,7 +13,7 @@ const program = new Command();
 program
   .name('juyiting-mcp-client')
   .description('聚义厅MCP客户端 - AI英雄协作工具')
-  .version('1.0.1')
+  .version('1.0.4')
   .option('-p, --heroes <file>', '本地英雄配置文件路径')
   .option('-c, --config <file>', '配置文件路径')
   .option('--debug', '启用调试模式')
@@ -51,7 +51,7 @@ function loadLocalHeroes(filePath?: string): Hero[] {
 // 创建MCP服务器
 const server = new McpServer({
   name: 'juyiting-mcp-client',
-  version: '1.0.1'
+  version: '1.0.4'
 });
 
 // 初始化英雄仓库（传入本地英雄）
