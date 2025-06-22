@@ -1,0 +1,122 @@
+{
+  "listConfigs": {
+    "success": {
+      "success": true,
+      "data": [
+        {
+          "id": "test-config-001",
+          "name": "测试创业分析团队",
+          "description": "专门用于测试的创业项目分析团队配置",
+          "personas": ["测试暴躁老哥", "测试自省姐", "测试粉丝妹"],
+          "createdAt": "2025-01-15T10:00:00Z",
+          "version": "1.0.0"
+        },
+        {
+          "id": "test-config-002",
+          "name": "测试技术评估团队",
+          "description": "用于技术方案评估的测试配置",
+          "personas": ["测试暴躁老哥", "测试自省姐"],
+          "createdAt": "2025-01-14T15:30:00Z",
+          "version": "2.1.0"
+        }
+      ]
+    },
+    "unauthorized": {
+      "success": false,
+      "error": "Invalid API key",
+      "code": "UNAUTHORIZED"
+    },
+    "empty": {
+      "success": true,
+      "data": []
+    },
+    "serverError": {
+      "success": false,
+      "error": "Internal server error",
+      "code": "SERVER_ERROR"
+    }
+  },
+  "downloadConfig": {
+    "success": {
+      "success": true,
+      "data": {
+        "id": "test-config-001",
+        "name": "测试创业分析团队",
+        "version": "1.0.0",
+        "description": "专门用于测试的创业项目分析团队配置",
+        "createdAt": "2025-01-15T10:00:00Z",
+        "updatedAt": "2025-01-15T10:00:00Z",
+        "personas": [
+          {
+            "id": "test_grumpy_bro",
+            "name": "测试暴躁老哥",
+            "rule": "你是测试版暴躁老哥，要用审视的目光发现问题，提供框架外的思维角度。",
+            "goal": "发现问题，批评指正，提供不同角度的思考",
+            "version": "1.0.0"
+          }
+        ],
+        "collaboration": {
+          "mode": "intelligent",
+          "maxRounds": 3,
+          "timeoutPerRound": 30000,
+          "enableCrossValidation": true,
+          "synthesisMode": "auto"
+        },
+        "tools": [
+          {
+            "name": "summon_persona",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    "notFound": {
+      "success": false,
+      "error": "Configuration not found",
+      "code": "NOT_FOUND"
+    },
+    "forbidden": {
+      "success": false,
+      "error": "Access denied to configuration",
+      "code": "FORBIDDEN"
+    }
+  },
+  "remotePersonas": {
+    "github": [
+      {
+        "id": "remote_analyst",
+        "name": "远程分析师",
+        "rule": "你是来自GitHub的远程分析师人格",
+        "goal": "提供专业的分析服务",
+        "version": "1.5.0",
+        "source": "remote"
+      }
+    ],
+    "gitee": [
+      {
+        "id": "remote_advisor",
+        "name": "远程顾问",
+        "rule": "你是来自Gitee的远程顾问人格",
+        "goal": "提供专业的咨询建议",
+        "version": "1.3.0",
+        "source": "remote"
+      }
+    ],
+    "empty": [],
+    "invalid": "invalid json response"
+  },
+  "networkErrors": {
+    "timeout": {
+      "type": "timeout",
+      "message": "Request timeout"
+    },
+    "connectionRefused": {
+      "type": "connection_refused",
+      "message": "Connection refused"
+    },
+    "dnsError": {
+      "type": "dns_error",
+      "message": "DNS resolution failed"
+    }
+  }
+} 

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "crawl-mcp": {
+      "command": "npx",
+      "args": ["-y", "crawl-mcp-server@latest"],
+      "env": {
+        "MCP_DEBUG": "false",
+        "CRAWL_LOG_LEVEL": "warn",
+        "CRAWL_OUTPUT_DIR": "./crawled_articles"
+      }
+    }
+  }
+} 

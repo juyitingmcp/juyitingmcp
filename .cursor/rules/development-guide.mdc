@@ -1,0 +1,481 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 聚义厅MCP开发指南
+
+## 开发环境搭建
+
+### 系统要求
+```bash
+# 必需环境
+- Node.js 18+
+- npm 8+ 或 yarn 1.22+
+- Git 2.30+
+
+# 推荐开发工具
+- VS Code + TypeScript 扩展
+- Cursor（用于测试MCP集成）
+```
+
+### 项目初始化
+```bash
+# 克隆项目
+git clone https://github.com/juyitingmcp/juyitingmcp.git
+cd juyitingmcp
+
+# 安装依赖
+npm install
+
+# 或使用 yarn
+yarn install
+```
+
+### 标准项目结构
+```
+juyiting-mcp-client/
+├── src/
+│   ├── server.ts              # MCP服务器主入口
+│   ├── types.ts               # 类型定义
+│   ├── persona-repository.ts  # 人格仓库
+│   ├── persona-sources.ts     # 人格数据源
+│   ├── collaboration-engine.ts # 协作引擎
+│   ├── config-synchronizer.ts # 配置同步器
+│   └── telemetry.ts          # 遥测模块
+├── dist/                      # 编译输出目录
+├── tests/                     # 测试文件
+├── examples/                  # 示例配置
+├── docs/                      # 文档
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+## 开发脚本配置
+
+### package.json 脚本
+```json
+{
+  "scripts": {
+    "dev": "tsx src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit"
+  }
+}
+```
+
+### TypeScript 配置
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "tests"]
+}
+```
+
+## 本地调试
+
+### 开发模式启动
+```bash
+# 基础开发模式
+npm run dev
+
+# 指定本地人格文件
+npm run dev -- --personas ./examples/local-personas.json
+
+# 启用调试模式
+DEBUG=true npm run dev
+```
+
+### MCP客户端配置
+
+#### Cursor配置示例
+```json
+{
+  "mcpServers": {
+    "juyiting-dev": {
+      "command": "node",
+      "args": [
+        "/path/to/juyiting-mcp-client/dist/server.js",
+        "--personas", "/path/to/local-personas.json"
+      ],
+      "env": {
+        "NODE_ENV": "development",
+        "DEBUG": "true"
+      }
+    }
+  }
+}
+```
+
+#### Claude Desktop配置示例
+```json
+{
+  "mcpServers": {
+    "juyiting": {
+      "command": "npx",
+      "args": ["-y", "@juyiting/mcp-client"],
+      "env": {
+        "JUYITING_CONFIG_PATH": "~/.juyiting/config.json"
+      }
+    }
+  }
+}
+```
+
+### 调试工具配置
+```typescript
+// src/utils/debug.ts
+export const DEBUG = process.env.NODE_ENV === 'development' || process.env.DEBUG === 'true';
+
+export function debugLog(message: string, data?: any) {
+  if (DEBUG) {
+    console.error(`[DEBUG ${new Date().toISOString()}] ${message}`, data || '');
+  }
+}
+
+export function measurePerformance<T>(name: string, fn: () => Promise<T>): Promise<T> {
+  const start = Date.now();
+  return fn().finally(() => {
+    const duration = Date.now() - start;
+    if (DEBUG) {
+      console.error(`⏱️ ${name} 耗时: ${duration}ms`);
+    }
+  });
+}
+```
+
+## 测试框架
+
+### Jest 配置
+```json
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "roots": ["<rootDir>/src", "<rootDir>/tests"],
+  "testMatch": ["**/__tests__/**/*.ts", "**/?(*.)+(spec|test).ts"],
+  "collectCoverageFrom": [
+    "src/**/*.ts",
+    "!src/**/*.d.ts",
+    "!src/index.ts"
+  ]
+}
+```
+
+### 单元测试示例
+```typescript
+// tests/persona-repository.test.ts
+import { RemotePersonaRepository } from '../src/persona-repository';
+import { Persona } from '../src/types';
+
+describe('RemotePersonaRepository', () => {
+  let repository: RemotePersonaRepository;
+  
+  beforeEach(() => {
+    const localPersonas: Persona[] = [
+      {
+        id: 'test-persona',
+        name: '测试人格',
+        rule: '测试规则',
+        goal: '测试目标',
+        version: '1.0'
+      }
+    ];
+    repository = new RemotePersonaRepository(localPersonas);
+  });
+
+  test('应该正确加载本地人格', async () => {
+    const personas = await repository.getAllPersonas();
+    expect(personas).toHaveLength(1);
+    expect(personas[0].name).toBe('测试人格');
+    expect(personas[0].source).toBe('local');
+  });
+
+  test('应该正确处理远程获取失败', async () => {
+    // 模拟网络失败
+    jest.spyOn(global, 'fetch').mockRejectedValue(new Error('Network error'));
+    
+    const personas = await repository.getAllPersonas();
+    expect(personas.length).toBeGreaterThan(0); // 应该返回默认人格
+  });
+});
+```
+
+### 集成测试示例
+```typescript
+// tests/mcp-integration.test.ts
+import { PersonaSummonerServer } from '../src/server';
+
+describe('MCP集成测试', () => {
+  let server: PersonaSummonerServer;
+
+  beforeEach(() => {
+    server = new PersonaSummonerServer();
+  });
+
+  test('应该正确处理summon_persona工具调用', async () => {
+    const request = {
+      jsonrpc: '2.0' as const,
+      id: 1,
+      method: 'tools/call' as const,
+      params: {
+        name: 'summon_persona',
+        arguments: { persona_name: '暴躁老哥' }
+      }
+    };
+
+    const response = await server.handleToolCall(request);
+    expect(response.content).toBeDefined();
+    expect(response.content[0].type).toBe('text');
+    expect(response.content[0].text).toContain('暴躁老哥');
+  });
+});
+```
+
+## 代码规范
+
+### ESLint 配置
+```json
+{
+  "extends": [
+    "@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/explicit-function-return-type": "warn",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "prefer-const": "error",
+    "no-var": "error"
+  }
+}
+```
+
+### 代码风格指南
+```typescript
+// 1. 使用明确的类型定义
+interface PersonaAnalysisResult {
+  personaId: string;
+  analysis: string;
+  confidence: number;
+}
+
+// 2. 使用async/await而非Promise链
+async function analyzeWithPersona(persona: Persona, query: string): Promise<PersonaAnalysisResult> {
+  try {
+    const result = await performAnalysis(persona, query);
+    return result;
+  } catch (error) {
+    throw new Error(`分析失败: ${error.message}`);
+  }
+}
+
+// 3. 使用常量定义配置
+const CONFIG = {
+  CACHE_DURATION: 5 * 60 * 1000, // 5分钟
+  MAX_RETRIES: 3,
+  TIMEOUT: 15000
+} as const;
+
+// 4. 使用枚举定义状态
+enum CollaborationMode {
+  PARALLEL = 'parallel',
+  SEQUENTIAL = 'sequential',
+  INTELLIGENT = 'intelligent'
+}
+```
+
+## 性能优化
+
+### 缓存实现
+```typescript
+class CacheManager {
+  private cache = new Map<string, { value: any; expiry: number }>();
+  private readonly maxSize = 1000;
+  private readonly defaultTTL = 5 * 60 * 1000;
+
+  set(key: string, value: any, ttl = this.defaultTTL): void {
+    // LRU淘汰
+    if (this.cache.size >= this.maxSize) {
+      const firstKey = this.cache.keys().next().value;
+      this.cache.delete(firstKey);
+    }
+
+    this.cache.set(key, {
+      value,
+      expiry: Date.now() + ttl
+    });
+  }
+
+  get(key: string): any | null {
+    const entry = this.cache.get(key);
+    if (!entry || Date.now() > entry.expiry) {
+      this.cache.delete(key);
+      return null;
+    }
+    return entry.value;
+  }
+}
+```
+
+### 并发控制
+```typescript
+class ConcurrencyManager {
+  private running = new Set<string>();
+  private queue = new Map<string, Promise<any>>();
+
+  async execute<T>(key: string, task: () => Promise<T>): Promise<T> {
+    // 请求去重
+    if (this.queue.has(key)) {
+      return this.queue.get(key) as Promise<T>;
+    }
+
+    const promise = this.runTask(key, task);
+    this.queue.set(key, promise);
+    
+    return promise.finally(() => {
+      this.queue.delete(key);
+      this.running.delete(key);
+    });
+  }
+
+  private async runTask<T>(key: string, task: () => Promise<T>): Promise<T> {
+    this.running.add(key);
+    return await task();
+  }
+}
+```
+
+## 错误处理
+
+### 统一错误处理
+```typescript
+export class JuYiTingError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+    public details?: any
+  ) {
+    super(message);
+    this.name = 'JuYiTingError';
+  }
+}
+
+export function handleToolError(error: unknown): MCPResponse {
+  if (error instanceof JuYiTingError) {
+    return {
+      content: [{
+        type: 'text',
+        text: `❌ ${error.message}\n\n错误代码: ${error.code}`
+      }]
+    };
+  }
+
+  return {
+    content: [{
+      type: 'text',
+      text: `❌ 未知错误: ${error instanceof Error ? error.message : String(error)}`
+    }]
+  };
+}
+```
+
+### 重试机制
+```typescript
+async function withRetry<T>(
+  operation: () => Promise<T>,
+  maxRetries = 3,
+  delay = 1000
+): Promise<T> {
+  let lastError: Error;
+  
+  for (let i = 0; i <= maxRetries; i++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error as Error;
+      
+      if (i === maxRetries) break;
+      
+      await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+    }
+  }
+  
+  throw lastError!;
+}
+```
+
+## 部署准备
+
+### 构建优化
+```bash
+# 清理构建
+npm run clean
+
+# 类型检查
+npm run type-check
+
+# 代码检查
+npm run lint
+
+# 运行测试
+npm test
+
+# 构建生产版本
+npm run build
+```
+
+### 环境变量管理
+```typescript
+// src/config/env.ts
+export const ENV = {
+  NODE_ENV: process.env.NODE_ENV || 'development',
+  DEBUG: process.env.DEBUG === 'true',
+  CONFIG_PATH: process.env.JUYITING_CONFIG_PATH || '~/.juyiting/config.json',
+  API_BASE_URL: process.env.JUYITING_API_URL || 'https://api.juyiting.com',
+  TELEMETRY_ENABLED: process.env.TELEMETRY_ENABLED !== 'false'
+} as const;
+```
+
+## 最佳实践
+
+### 1. 模块化设计
+- 每个文件职责单一
+- 使用依赖注入
+- 避免循环依赖
+
+### 2. 错误处理
+- 统一错误类型
+- 提供有用的错误信息
+- 实现优雅降级
+
+### 3. 性能考虑
+- 使用缓存减少重复计算
+- 实现请求去重
+- 控制并发数量
+
+### 4. 可维护性
+- 完善的类型定义
+- 充分的单元测试
+- 清晰的文档注释

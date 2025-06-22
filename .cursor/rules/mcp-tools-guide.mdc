@@ -1,0 +1,223 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 聚义厅MCP工具使用指南
+
+## 工具概览
+聚义厅MCP提供4个核心工具，用于人格召唤、配置管理和协作分析。
+
+## 1. summon_persona - 人格召唤工具
+
+### 功能描述
+召唤指定AI人格进行单独分析，支持通过人格名称或ID进行召唤。
+
+### 参数定义
+```typescript
+interface SummonPersonaArgs {
+  persona_name: string;  // 人格名称或ID（必需）
+}
+```
+
+### 使用示例
+```json
+{
+  "persona_name": "暴躁老哥"
+}
+```
+
+### 支持的人格
+- **暴躁老哥** (grumpy_bro): 犀利批评，框架外思维
+- **自省姐** (reflection_sis): 深度思考，查漏补缺
+- **粉丝妹** (fan_girl): 发现亮点，放大优势
+- **小布丁** (product_strategist): 商业分析，产品策略
+
+### 返回格式
+```
+🎭 **人格名称** (人格ID) 已召唤！
+**🎯 目标**: 人格目标描述
+**📝 描述**: 人格详细描述
+**📜 人格规则**: 具体的行为规则
+```
+
+## 2. list_persona_configs - 配置列表查询
+
+### 功能描述
+查看用户在聚义厅Web平台创建的人格配置列表，显示配置详情和状态。
+
+### 参数定义
+```typescript
+// 无参数
+{}
+```
+
+### 使用示例
+```json
+{}
+```
+
+### 返回格式
+```
+📋 **可用人格配置 (N个)**：
+
+1. **配置名称** (配置ID)
+   📝 配置描述
+   🎭 人格：人格1, 人格2, 人格3
+   📅 创建时间：YYYY-MM-DD
+
+💡 使用 download_persona_config 工具下载指定配置
+```
+
+### 错误处理
+- userKey未配置：提示设置认证密钥
+- 网络连接失败：提供故障排查建议
+- 服务不可用：显示服务状态检查步骤
+
+## 3. download_persona_config - 配置下载工具
+
+### 功能描述
+下载指定的人格配置到本地，更新本地人格仓库并激活配置。
+
+### 参数定义
+```typescript
+interface DownloadConfigArgs {
+  configId: string;  // 配置ID（必需）
+}
+```
+
+### 使用示例
+```json
+{
+  "configId": "config-001"
+}
+```
+
+### 执行流程
+1. **权限验证**: 检查userKey有效性
+2. **配置验证**: 确认配置存在且有权限访问
+3. **下载配置**: 获取完整配置文件
+4. **本地更新**: 更新人格仓库和本地配置
+5. **激活配置**: 设置为当前活跃配置
+
+### 返回格式
+```
+✅ **配置下载成功**
+
+📦 **配置名称** (配置ID)
+🎭 **激活人格**: 人格1, 人格2, 人格3
+⚙️ **协作模式**: parallel/sequential/intelligent
+📅 **版本**: 1.0.0
+
+现在可以使用 start_collaboration 启动团队协作分析
+```
+
+## 4. start_collaboration - 协作分析工具
+
+### 功能描述
+启动多人格协作分析，根据当前激活配置执行智能协作流程。
+
+### 参数定义
+```typescript
+interface StartCollaborationArgs {
+  query: string;           // 分析问题（必需）
+  personaIds?: string[];   // 可选：指定参与协作的人格ID列表
+}
+```
+
+### 使用示例
+```json
+{
+  "query": "分析这个SaaS产品的商业模式",
+  "personaIds": ["grumpy_bro", "reflection_sis"]  // 可选
+}
+```
+
+### 协作模式
+- **parallel**: 并行分析模式，多人格同时分析
+- **sequential**: 顺序分析模式，人格依次分析
+- **intelligent**: 智能协作模式，自动选择最佳流程
+
+### 执行流程
+1. **配置检查**: 验证活跃配置存在
+2. **人格选择**: 智能选择或使用指定人格
+3. **协作执行**: 根据模式执行分析流程
+4. **结果综合**: 整合多人格分析结果
+5. **行动计划**: 生成具体的行动建议
+
+### 返回格式
+```
+🤝 **协作分析报告**
+
+📋 **分析问题**: 用户问题
+👥 **参与人格**: 人格1, 人格2, 人格3
+⚙️ **协作模式**: 使用的协作模式
+
+## 个人分析
+### 🎭 人格1分析
+- 核心观点
+- 关键发现
+- 风险提醒
+- 具体建议
+
+### 🎭 人格2分析
+...
+
+## 交叉验证
+- 共同观点
+- 分歧点分析
+- 互补建议
+
+## 综合结论
+- 最终建议
+- 行动计划
+- 优先级排序
+```
+
+## 工具实现规范
+
+### 错误处理标准
+```typescript
+try {
+  // 工具逻辑
+} catch (error) {
+  return {
+    content: [{
+      type: 'text',
+      text: `❌ 操作失败：${error.message}\n\n可能原因：\n1. 原因1\n2. 原因2\n3. 原因3`
+    }]
+  };
+}
+```
+
+### 遥测数据收集
+所有工具调用都需要记录遥测数据：
+```typescript
+telemetry.trackEvent('tool_called', {
+  tool_name: 'summon_persona',
+  persona_id: persona.id,
+  success: true,
+  execution_time: Date.now() - startTime
+});
+```
+
+### 参数验证
+使用Zod进行参数验证：
+```typescript
+const argsSchema = z.object({
+  persona_name: z.string().min(1, '人格名称不能为空')
+});
+
+const validatedArgs = argsSchema.parse(args);
+```
+
+### 响应格式标准
+所有工具必须返回标准MCP响应：
+```typescript
+{
+  content: [{
+    type: 'text',
+    text: string  // Markdown格式的响应内容
+  }]
+}
+```

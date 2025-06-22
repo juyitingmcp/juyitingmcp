@@ -1,0 +1,186 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 聚义厅MCP项目概览
+
+## 项目简介
+聚义厅MCP是基于Model Context Protocol的AI人格协作系统，支持多人格智能召唤、配置同步和协作分析。采用服务端配置生成 + 客户端MCP执行的架构模式，用户在聚义厅Web平台上个性化配置人格组合，通过MCP客户端工具同步配置到本地，实现智能化的多人格协作分析。
+
+## 核心功能
+- **🎭 多人格协作**: 支持暴躁老哥、自省姐、粉丝妹等多种AI人格
+- **⚙️ 配置同步**: 用户在Web平台配置，MCP客户端自动同步
+- **🤝 智能协作**: 支持并行、顺序、智能三种协作模式
+- **🔧 标准化接口**: 严格遵循MCP协议规范，兼容Cursor、Claude Desktop等客户端
+- **📊 遥测分析**: 可选的使用数据收集和分析
+- **🌐 多源人格**: 支持GitHub、Gitee、CDN等多个人格数据源
+
+## 技术栈
+- **Node.js 18+**: 运行环境
+- **TypeScript 5.8+**: 主要开发语言，提供类型安全
+- **@modelcontextprotocol/sdk 1.12.3+**: MCP协议官方SDK
+- **Commander.js 12.1+**: 命令行参数解析
+- **Zod 3.25+**: 运行时参数验证和类型检查
+- **PostHog 5.1+**: 产品分析和遥测（可选）
+
+## 项目结构
+```
+juyitingmcp/
+├── src/
+│   ├── server.ts              # MCP服务器主入口
+│   ├── types.ts               # 核心类型定义
+│   ├── persona-repository.ts  # 人格仓库管理
+│   ├── persona-sources.ts     # 人格数据源配置
+│   ├── collaboration-engine.ts # 协作引擎核心
+│   ├── config-synchronizer.ts # 配置同步器
+│   └── telemetry.ts          # 遥测数据收集
+├── dist/                      # TypeScript编译输出
+├── tests/                     # 测试文件
+│   ├── unit/                  # 单元测试
+│   └── integration/           # 集成测试
+├── examples/                  # 示例配置文件
+│   ├── local-personas.json   # 本地人格示例
+│   └── config-examples/      # 配置示例
+├── docs/                      # 项目文档
+├── .cursor/                   # Cursor IDE规则配置
+│   └── rules/                 # 开发规则文件
+├── package.json               # 项目配置和依赖
+├── tsconfig.json              # TypeScript配置
+├── jest.config.js             # 测试配置
+└── README.md                  # 项目说明
+```
+
+## 核心组件
+
+### 1. PersonaSummonerServer
+**文件**: `src/server.ts`
+**职责**: MCP服务器主入口，协调各组件工作
+**关键功能**:
+- MCP协议处理
+- 工具注册和调用
+- 错误处理和响应格式化
+
+### 2. RemotePersonaRepository
+**文件**: `src/persona-repository.ts`
+**职责**: 人格数据的获取、缓存和管理
+**关键功能**:
+- 多源人格数据获取
+- 智能缓存策略（5分钟TTL）
+- 本地人格优先级处理
+- 优雅降级机制
+
+### 3. CollaborationEngine
+**文件**: `src/collaboration-engine.ts`
+**职责**: 执行多人格协作分析
+**关键功能**:
+- 三种协作模式（parallel、sequential、intelligent）
+- 智能人格选择算法
+- 会话状态管理
+- 结果综合和分析
+
+### 4. ConfigSynchronizer
+**文件**: `src/config-synchronizer.ts`
+**职责**: 处理远程配置同步和本地存储
+**关键功能**:
+- 远程配置下载
+- 本地配置管理
+- 自动同步检查
+- 配置完整性验证
+
+## MCP工具接口
+
+### 可用工具
+1. **summon_persona**: 召唤指定人格进行单独分析
+2. **list_persona_configs**: 查看用户的人格配置列表
+3. **download_persona_config**: 下载指定配置到本地
+4. **start_collaboration**: 启动多人格协作分析
+
+### 工具特性
+- 标准MCP协议响应格式
+- Zod参数验证
+- 详细错误处理
+- 遥测数据收集
+- Markdown格式输出
+
+## 开发和构建
+
+### 开发脚本
+```bash
+# 开发模式（热重载）
+npm run dev
+
+# 构建项目
+npm run build
+
+# 运行测试
+npm test
+
+# 代码检查
+npm run lint
+
+# 类型检查
+npm run type-check
+```
+
+### 环境配置
+- **开发环境**: 支持本地人格文件和调试模式
+- **生产环境**: 远程配置同步和遥测收集
+- **测试环境**: 模拟数据和离线模式
+
+## 部署和分发
+
+### NPM包分发
+- 包名: `@juyiting/mcp-client`
+- 全局安装: `npm install -g @juyiting/mcp-client`
+- 本地使用: `npx @juyiting/mcp-client`
+
+### 二进制分发
+- 支持多平台二进制打包
+- 无需Node.js环境即可运行
+- 自动化CI/CD构建
+
+## 配置和使用
+
+### 用户配置
+- 配置路径: `~/.juyiting/config.json`
+- 包含userKey、API地址、缓存设置等
+- 支持自动同步和版本管理
+
+### Cursor集成
+```json
+{
+  "mcpServers": {
+    "juyiting": {
+      "command": "npx",
+      "args": ["-y", "@juyiting/mcp-client"]
+    }
+  }
+}
+```
+
+## 性能特性
+
+### 缓存策略
+- 人格数据5分钟内存缓存
+- LRU淘汰策略，最大1000条
+- 本地配置文件持久化
+
+### 网络优化
+- 15秒超时控制
+- 请求去重机制
+- 多源降级策略
+- 智能重试机制
+
+## 质量保证
+
+### 测试覆盖
+- 单元测试覆盖核心逻辑
+- 集成测试验证MCP协议
+- 模拟测试处理网络异常
+
+### 代码质量
+- TypeScript严格模式
+- ESLint代码检查
+- Prettier代码格式化
+- 完整的类型定义

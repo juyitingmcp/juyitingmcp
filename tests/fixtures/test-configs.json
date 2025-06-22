@@ -1,0 +1,123 @@
+[
+  {
+    "id": "test-config-001",
+    "name": "测试创业分析团队",
+    "version": "1.0.0",
+    "description": "专门用于测试的创业项目分析团队配置",
+    "createdAt": "2025-01-15T10:00:00Z",
+    "updatedAt": "2025-01-15T10:00:00Z",
+    "personas": [
+      {
+        "id": "test_grumpy_bro",
+        "name": "测试暴躁老哥",
+        "rule": "你是测试版暴躁老哥，要用审视的目光发现问题，提供框架外的思维角度。",
+        "goal": "发现问题，批评指正，提供不同角度的思考",
+        "version": "1.0.0"
+      },
+      {
+        "id": "test_reflection_sis",
+        "name": "测试自省姐",
+        "rule": "你是测试版自省姐，总是不断挑战输出，寻找思考盲点，追溯第一性原理。",
+        "goal": "深度思考，查漏补缺，完善分析",
+        "version": "1.0.0"
+      },
+      {
+        "id": "test_fan_girl",
+        "name": "测试粉丝妹",
+        "rule": "你是测试版粉丝妹，善于发现亮点，放大优势，给予正面鼓励。",
+        "goal": "发现亮点，鼓励支持，放大优势",
+        "version": "1.0.0"
+      }
+    ],
+    "collaboration": {
+      "mode": "intelligent",
+      "maxRounds": 3,
+      "timeoutPerRound": 30000,
+      "enableCrossValidation": true,
+      "synthesisMode": "auto"
+    },
+    "tools": [
+      {
+        "name": "summon_persona",
+        "enabled": true
+      },
+      {
+        "name": "start_collaboration",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "test-config-002",
+    "name": "测试技术评估团队",
+    "version": "2.1.0",
+    "description": "用于技术方案评估的测试配置",
+    "createdAt": "2025-01-14T15:30:00Z",
+    "updatedAt": "2025-01-15T09:45:00Z",
+    "personas": [
+      {
+        "id": "test_grumpy_bro",
+        "name": "测试暴躁老哥",
+        "rule": "专注于技术风险和问题发现",
+        "goal": "技术风险评估和问题识别",
+        "version": "1.0.0"
+      },
+      {
+        "id": "test_reflection_sis",
+        "name": "测试自省姐",
+        "rule": "深度分析技术架构和设计原理",
+        "goal": "技术架构深度分析",
+        "version": "1.0.0"
+      }
+    ],
+    "collaboration": {
+      "mode": "sequential",
+      "maxRounds": 2,
+      "timeoutPerRound": 25000,
+      "enableCrossValidation": false,
+      "synthesisMode": "manual"
+    },
+    "tools": [
+      {
+        "name": "summon_persona",
+        "enabled": true
+      },
+      {
+        "name": "start_collaboration",
+        "enabled": true
+      },
+      {
+        "name": "get_tool_stats",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "test-config-empty",
+    "name": "测试空配置",
+    "version": "1.0.0",
+    "description": "用于测试边界条件的空配置",
+    "createdAt": "2025-01-15T12:00:00Z",
+    "updatedAt": "2025-01-15T12:00:00Z",
+    "personas": [],
+    "collaboration": {
+      "mode": "parallel",
+      "maxRounds": 1,
+      "timeoutPerRound": 15000,
+      "enableCrossValidation": false,
+      "synthesisMode": "auto"
+    },
+    "tools": []
+  },
+  {
+    "id": "test-config-invalid",
+    "name": "测试无效配置",
+    "description": "缺少必需字段的无效配置",
+    "personas": [
+      {
+        "id": "invalid_persona",
+        "name": "无效人格"
+      }
+    ]
+  }
+] 

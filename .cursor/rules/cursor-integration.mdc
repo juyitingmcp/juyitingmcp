@@ -1,0 +1,354 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 聚义厅MCP与Cursor集成指南
+
+## Cursor MCP配置
+
+### 基础配置
+在Cursor的设置中添加以下MCP服务器配置：
+
+```json
+{
+  "mcpServers": {
+    "juyiting": {
+      "command": "npx",
+      "args": ["-y", "@juyiting/mcp-client"],
+      "env": {
+        "JUYITING_CONFIG_PATH": "~/.juyiting/config.json"
+      }
+    }
+  }
+}
+```
+
+### 开发环境配置
+用于本地开发和调试：
+
+```json
+{
+  "mcpServers": {
+    "juyiting-dev": {
+      "command": "node",
+      "args": [
+        "/path/to/juyitingmcp/dist/server.js",
+        "--personas", "/path/to/local-personas.json"
+      ],
+      "env": {
+        "NODE_ENV": "development",
+        "DEBUG": "true",
+        "TELEMETRY_ENABLED": "false"
+      }
+    }
+  }
+}
+```
+
+### 高级配置选项
+```json
+{
+  "mcpServers": {
+    "juyiting": {
+      "command": "node",
+      "args": [
+        "/usr/local/bin/juyiting-mcp",
+        "--config", "~/.juyiting/config.json",
+        "--cache-duration", "300000",
+        "--max-retries", "3"
+      ],
+      "env": {
+        "JUYITING_API_URL": "https://api.juyiting.com",
+        "JUYITING_CACHE_DIR": "~/.juyiting/cache",
+        "TELEMETRY_ENABLED": "true"
+      }
+    }
+  }
+}
+```
+
+## 用户配置设置
+
+### 初始配置
+首次使用需要设置用户认证密钥：
+
+```bash
+# 创建配置目录
+mkdir -p ~/.juyiting
+
+# 设置用户密钥
+echo '{
+  "userKey": "your-api-key-from-juyiting-web",
+  "apiBaseUrl": "https://api.juyiting.com",
+  "cache": {
+    "duration": 300000,
+    "maxSize": 1000
+  },
+  "sync": {
+    "autoSync": true,
+    "syncInterval": 3600000,
+    "retryAttempts": 3
+  }
+}' > ~/.juyiting/config.json
+```
+
+### 配置文件详解
+```typescript
+interface LocalConfig {
+  userKey: string;                    // 聚义厅Web平台获取的API密钥
+  apiBaseUrl: string;                 // API服务地址，默认官方服务
+  currentConfig?: PersonaConfig;       // 当前激活的人格配置
+  lastSyncTime?: string;              // 最后同步时间
+  
+  cache: {
+    duration: number;                 // 缓存时长（毫秒），默认5分钟
+    maxSize: number;                  // 最大缓存条目，默认1000
+  };
+  
+  sync: {
+    autoSync: boolean;                // 是否自动同步配置，默认true
+    syncInterval: number;             // 同步间隔（毫秒），默认1小时
+    retryAttempts: number;            // 重试次数，默认3次
+  };
+}
+```
+
+## 在Cursor中使用聚义厅MCP
+
+### 1. 查看可用配置
+```
+@juyiting 查看我的人格配置列表
+```
+
+期望输出：
+```
+📋 **可用人格配置 (2个)**：
+
+1. **创业分析团队** (config-001)
+   📝 专注创业项目评估的人格组合
+   🎭 人格：暴躁老哥, 自省姐, 粉丝妹
+   📅 创建时间：2025-01-15
+
+2. **技术评估团队** (config-002)
+   📝 技术方案和架构评估
+   🎭 人格：架构师, 代码侠, 产品经理
+   📅 创建时间：2025-01-14
+
+💡 使用 download_persona_config 工具下载指定配置
+```
+
+### 2. 下载并激活配置
+```
+@juyiting 下载配置：config-001
+```
+
+期望输出：
+```
+✅ **配置下载成功**
+
+📦 **创业分析团队** (config-001)
+🎭 **激活人格**: 暴躁老哥, 自省姐, 粉丝妹
+⚙️ **协作模式**: intelligent
+📅 **版本**: 1.2.0
+
+现在可以使用 start_collaboration 启动团队协作分析
+```
+
+### 3. 召唤单个人格
+```
+@juyiting 召唤暴躁老哥
+```
+
+期望输出：
+```
+🎭 **暴躁老哥** (grumpy_bro) 已召唤！
+**🎯 目标**: 用审视的目光发现问题，提供框架外的思维角度
+**📝 描述**: 专门挑战传统思维，发现潜在风险和问题
+
+**📜 人格规则**:
+你是暴躁老哥，要每次都用审视的目光，仔细看我的输入的潜在的问题，你要犀利的提醒在出我的问题。并给出明显在我思考框架之外的建议。你要觉得我说的太离谱了，你就骂回来，帮助我瞬间清醒。
+```
+
+### 4. 启动团队协作
+```
+@juyiting 分析这个SaaS产品的商业模式：
+[产品描述内容]
+```
+
+期望输出：
+```
+🤝 **协作分析报告**
+
+📋 **分析问题**: SaaS产品商业模式分析
+👥 **参与人格**: 暴躁老哥, 自省姐, 粉丝妹
+⚙️ **协作模式**: intelligent
+
+## 个人分析
+### 🎭 暴躁老哥分析
+- **核心观点**: 这个模式看起来很美好，但市场验证不足
+- **关键发现**: 竞争对手分析过于乐观，定价策略缺乏依据
+- **风险提醒**: 客户获取成本可能被严重低估
+- **具体建议**: 先做MVP验证，别一上来就全功能开发
+
+### 🎭 自省姐分析
+- **核心观点**: 商业模式逻辑基本合理，但需要深化思考
+- **关键发现**: 价值主张清晰，但商业闭环还有待完善
+- **风险提醒**: 需要更多关注长期可持续性
+- **具体建议**: 建议制定详细的里程碑和验证指标
+
+### 🎭 粉丝妹分析
+- **核心观点**: 产品创意很棒，有很多亮点值得放大
+- **关键发现**: 用户痛点抓得很准，解决方案有创新性
+- **风险提醒**: 要注意保持产品的差异化优势
+- **具体建议**: 可以考虑先从细分市场切入
+
+## 交叉验证
+- **共同观点**: 产品方向正确，但需要更多市场验证
+- **分歧点分析**: 对市场时机的判断存在分歧
+- **互补建议**: 结合谨慎验证和积极推进的平衡策略
+
+## 综合结论
+- **最终建议**: 采用渐进式验证策略，先MVP后扩展
+- **行动计划**: 1.市场调研 2.MVP开发 3.用户测试 4.迭代优化
+- **优先级排序**: 用户验证 > 产品开发 > 市场推广
+```
+
+## 常见使用场景
+
+### 1. 代码审查
+```
+@juyiting 召唤代码侠，帮我审查这段代码：
+[代码内容]
+```
+
+### 2. 产品策略分析
+```
+@juyiting 启动产品分析团队，评估这个功能需求：
+[需求描述]
+```
+
+### 3. 技术方案评估
+```
+@juyiting 召唤架构师，分析这个技术架构：
+[架构图或描述]
+```
+
+### 4. 创业想法验证
+```
+@juyiting 下载创业分析团队配置
+@juyiting 分析这个创业想法的可行性：
+[创业想法描述]
+```
+
+## 故障排查
+
+### 1. MCP连接问题
+**症状**: Cursor无法识别聚义厅MCP工具
+
+**排查步骤**:
+```bash
+# 检查Node.js版本
+node --version  # 需要18+
+
+# 检查MCP包安装
+npm list -g @juyiting/mcp-client
+
+# 检查配置文件
+cat ~/.cursor/mcp_servers.json
+```
+
+**解决方案**:
+```bash
+# 重新安装MCP包
+npm install -g @juyiting/mcp-client@latest
+
+# 重启Cursor
+```
+
+### 2. 认证失败
+**症状**: 提示"Invalid API key"
+
+**排查步骤**:
+```bash
+# 检查配置文件
+cat ~/.juyiting/config.json
+
+# 验证userKey格式
+echo $JUYITING_USER_KEY
+```
+
+**解决方案**:
+- 登录聚义厅Web平台获取新的API密钥
+- 更新本地配置文件
+
+### 3. 人格加载失败
+**症状**: 人格列表为空或加载超时
+
+**排查步骤**:
+```bash
+# 检查网络连接
+curl -I https://api.juyiting.com/health
+
+# 检查缓存状态
+ls -la ~/.juyiting/cache/
+```
+
+**解决方案**:
+```bash
+# 清理缓存
+rm -rf ~/.juyiting/cache/*
+
+# 重新同步
+@juyiting 查看我的人格配置列表
+```
+
+## 性能优化建议
+
+### 1. 缓存配置
+```json
+{
+  "cache": {
+    "duration": 600000,    // 增加到10分钟
+    "maxSize": 2000        // 增加缓存容量
+  }
+}
+```
+
+### 2. 网络优化
+```json
+{
+  "env": {
+    "JUYITING_TIMEOUT": "30000",      // 增加超时时间
+    "JUYITING_MAX_RETRIES": "5"       // 增加重试次数
+  }
+}
+```
+
+### 3. 调试模式
+开发时启用详细日志：
+```json
+{
+  "env": {
+    "DEBUG": "true",
+    "NODE_ENV": "development"
+  }
+}
+```
+
+## 最佳实践
+
+### 1. 配置管理
+- 定期备份配置文件
+- 使用版本控制管理本地人格
+- 设置合理的同步间隔
+
+### 2. 工作流集成
+- 将人格召唤集成到代码审查流程
+- 使用团队协作分析重要决策
+- 建立标准化的分析模板
+
+### 3. 团队协作
+- 共享有效的人格配置
+- 建立团队人格库
+- 定期更新和优化人格规则

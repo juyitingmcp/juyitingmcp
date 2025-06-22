@@ -1,0 +1,106 @@
+# Source files (only include compiled dist)
+src/
+*.ts
+!*.d.ts
+
+# Tests
+tests/
+test/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+jest.config.js
+jest.config.ts
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Documentation sources
+docs/
+*.md
+!README.md
+
+# Configuration files
+.eslintrc.*
+.prettierrc*
+tsconfig.json
+tsconfig.*.json
+
+# Build tools
+scripts/
+.github/
+.gitignore
+.editorconfig
+
+# Cache and temporary files
+.cache/
+.nyc_output/
+coverage/
+*.log
+*.tmp
+*.temp
+
+# Environment files
+.env*
+!.env.example
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Examples (keep for npm)
+# examples/
+
+# User specific files
+.plan
+*.plan
+.todo
+*.todo
+.notes
+*.notes
+
+# Development directories
+playground/
+sandbox/
+.dev/
+dev/
+
+# Local configuration
+config/local.json
+.juyiting/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Linter cache
+.eslintcache
+.stylelintcache
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Test results
+test-results/
+junit.xml
+
+# Binary releases
+releases/
+binaries/ 
